@@ -20,7 +20,6 @@ class Menu:
                 clear_screen()
                 create_player()
                 
-
             elif choix == '0': 
                 clear_screen()
                 print("👋 Fin du programme, aurevoir")

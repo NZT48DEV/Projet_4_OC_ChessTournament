@@ -1,4 +1,4 @@
-from views.menu import Menu
+from views.main_menu import Menu
 
 if __name__ == "__main__":
     menu = Menu()

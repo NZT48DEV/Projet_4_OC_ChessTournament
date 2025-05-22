@@ -1,13 +1,13 @@
 import time
-from utils.formatters import format_first_name, format_last_name, format_date, format_id_national_chess
-from utils.validators import is_valid_name, is_valid_date, is_valid_id_national_chess
-from utils.messages import invalide_name_message, invalid_date_message, invalide_id_national_chess
-from utils.input_handlers import get_valid_input
+from utils.input_formatters import format_first_name, format_last_name, format_date, format_id_national_chess
+from utils.input_validators import is_valid_name, is_valid_date, is_valid_id_national_chess
+from utils.error_messages import invalide_name_message, invalid_date_message, invalide_id_national_chess
+from utils.input_manager import get_valid_input
 
 
 class CreatePlayer():
 
-    def display_menu(self):
+    def display_create_player_menu(self):
         print("\n" + "=" * 40)
         print("👤    CRÉATION D'UN NOUVEAU JOUEUR    👤")
         print("=" * 40)

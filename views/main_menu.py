@@ -1,8 +1,8 @@
-from controller.player import create_player
+from controller.player_controller import create_player
 from utils.console import clear_screen
 
 class Menu:
-    def display_menu(self):
+    def display_main_menu(self):
             print("\n" + "=" * 40)
             print("♟️       TOURNOI D'ÉCHECS - MENU       ♟️")
             print("=" * 40)
@@ -13,7 +13,7 @@ class Menu:
     def menu(self):
         while True:
             clear_screen()
-            self.display_menu()
+            self.display_main_menu()
             choix = input("Votre Choix → ")
 
             if choix == '1':

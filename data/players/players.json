@@ -46,5 +46,15 @@
         "last_name": "TORI-TURA",
         "date_of_birth": "20/05/2000",
         "id_national_chess": "TD59879"
+    },
+    {
+        "first_name": "Janos",
+        "last_name": "LAPINOS",
+        "date_of_birth": "11/10/2019",
+        "id_national_chess": "DR69879",
+        "total_score": 0.0,
+        "tournament_score": 0.0,
+        "rank": 0,
+        "played_with": []
     }
 ]

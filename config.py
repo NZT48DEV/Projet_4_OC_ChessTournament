@@ -2,8 +2,11 @@ import os
 
 # Dossier des données
 BASE_DATA_FOLDER = "data"
+
 PLAYERS_FOLDER = os.path.join(BASE_DATA_FOLDER, "players")
 PLAYERS_FILENAME = "players.json"
+
+TOURNAMENTS_FOLDER = os.path.join(BASE_DATA_FOLDER, "tournaments")
 
 
 # Formats

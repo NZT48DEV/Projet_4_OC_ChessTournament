@@ -1,7 +1,7 @@
 import time
 from models.player_model import Player
 from views.player_view import CreatePlayer
-from controller.player_data import save_player_to_json
+from storage.player_data import save_player_to_json
 
 def create_player():
 

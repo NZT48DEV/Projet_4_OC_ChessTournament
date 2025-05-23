@@ -1,3 +1,6 @@
+# Fichier spécifique
+TODO.md
+
 # Ignore les fichiers Python compilés
 __pycache__/
 *.py[cod]

@@ -1,7 +1,7 @@
 class Tournament:
     def __init__(
         self, 
-        name: str, 
+        tournament_name: str, 
         location: str, 
         start_date: str, 
         end_date: str, 
@@ -12,7 +12,7 @@ class Tournament:
         description: str = ""
         ) -> None:
 
-        self.name = name
+        self.tournament_name = tournament_name
         self.location = location
         self.start_date = start_date
         self.end_date = end_date
@@ -24,7 +24,7 @@ class Tournament:
     
     def get_serialized_tournament(self):
         return {
-            "name": self.name,
+            "tournament_name": self.tournament_name,
             "location": self.location,
             "start_date": self.start_date,
             "end_date": self.end_date,

@@ -1,32 +1,118 @@
-from datetime import datetime
-
-from config import MAX_NAME_LENGTH, DATE_INPUT_FORMAT, DATE_STORAGE_FORMAT
+from utils.date_helpers import parse_raw_date
+from config import MAX_NAME_LENGTH, DATE_STORAGE_FORMAT, MAX_DESCRIPTION_LENGTH
+from utils.error_messages import invalid_number_of_rounds
 
 
 def format_first_name(first_name: str) -> str:
+    """
+    Formate le prénom du joueur
+    - Supprime les espaces en début et en fin de chaîne
+    - Met en majuscule la première lettre de chaque mot
+    - Coupe à MAX_NAME_LENGTH (40 caractères maximum)
+
+    Args:
+        first_name(str): Le prénom du joueur à formater
+
+    Returns:
+        str: Le prénom formaté
+    """
     first_name = first_name.strip().title()
     return first_name[:MAX_NAME_LENGTH]
 
 
 def format_last_name(last_name: str) -> str:
+    """
+    Formate le nom du joueur
+    - Supprime les espaces en début et en fin de chaîne
+    - Convertit tous les caractères en majuscules
+    - Coupe à MAX_NAME_LENGTH (40 caractères maximum)
+
+    Args:
+        last_name(str): Le nom du joueur à formater
+
+    Returns:
+        str: Le nom formaté
+    """
     last_name = last_name.strip().upper()
     return last_name[:MAX_NAME_LENGTH]
 
 
+def format_tournament_name(tournament_name: str) -> str:
+    """
+    Formate le nom du tournoi :
+    - Si le nom est uniquement numérique, ajoute 'TOURNOI' devant
+    - Transforme tout en majuscules
+    - Coupe à MAX_NAME_LENGTH (40 caractères maximum)
+
+    Args:
+        tournament_name(str): Le nom du tournoi à formatter
+    """
+    tournament_name = tournament_name.strip().upper()[:MAX_NAME_LENGTH]
+
+    if tournament_name.isdigit():
+        return f"TOURNOI {tournament_name[:MAX_NAME_LENGTH]}"
+    return tournament_name
+
+
 def format_id_national_chess(id_national_chess: str) -> str:
+    """
+    Formate l'ID national d'échecs :
+    - Supprime les espaces en début et en fin de chaîne
+    - Transforme tout en majuscules
+
+    Args:
+        id_national_chess(str): l'ID national d'échecs à formatter
+    """    
     return id_national_chess.strip().upper()
 
 
 def format_date(date_str: str) -> str | None:
-    date_str = date_str.strip()
-    for separator in [" ", "-", ".", "/"]:
-        date_str = date_str.replace(separator, "")
+    """
+    Formate une date d'entrée utilisateur vers le format de stockage standard.
 
-    if len(date_str) == 8:
-        try:
-            date = datetime.strptime(date_str, DATE_INPUT_FORMAT)
-            return date.strftime(DATE_STORAGE_FORMAT)
-        except ValueError:
-            return None   
-    else:
+    Args:
+        date_str (str): Une date brute (JJ/MM/AAAA, JJ-MM-AAAA, etc.)
+
+    Returns:
+        str | None: La date formatée (AAAA-MM-JJ) ou None si invalide.
+    """
+    date = parse_raw_date(date_str)
+    if date is None:
         return None
+    return date.strftime(DATE_STORAGE_FORMAT)
+
+
+def format_location_name(location: str) -> str:
+    """
+    Formate le nom du lieu :
+    - Supprime les espaces en début et en fin de chaîne
+    - Transforme tout en majuscules
+
+    Args:
+        location(str): Le nom du lieu à formater
+    
+    Returns:
+        str: Le nom du lieu formaté
+    """    
+    return location.strip().upper()
+
+
+def format_number_of_rounds(number_of_rounds: str) -> int:
+    number_of_rounds = number_of_rounds.strip()
+
+    if number_of_rounds == "":
+        return 4
+    
+    try:
+        return int(number_of_rounds)
+    except ValueError:
+        return invalid_number_of_rounds()
+
+
+def format_description(description: str) -> str:
+    """
+    Nettoie la description :
+    - Supprime les espaces en début/fin
+    - Tronque à 500 caractères
+    """
+    return description.strip()[:MAX_DESCRIPTION_LENGTH]

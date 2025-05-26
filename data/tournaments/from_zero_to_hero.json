@@ -1,0 +1,13 @@
+[
+    {
+        "tournament_name": "FROM ZERO TO HERO",
+        "location": "DISTRICT 13",
+        "start_date": "26/05/2025",
+        "end_date": "27/05/2025",
+        "actual_round": 0,
+        "list_of_rounds": [],
+        "list_of_players": [],
+        "number_of_rounds": 4,
+        "description": "Ceci est un test."
+    }
+]

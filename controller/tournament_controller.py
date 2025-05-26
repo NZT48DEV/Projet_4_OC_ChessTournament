@@ -8,7 +8,7 @@ def create_tournament():
     users_entries = CreateTournamentView().display_create_tournament_menu()
 
     tournament = Tournament(
-        name=users_entries["name"],
+        tournament_name=users_entries["tournament_name"],
         location=users_entries["location"],
         start_date=users_entries["start_date"],
         end_date=users_entries["end_date"],
@@ -22,7 +22,7 @@ def create_tournament():
     save_tournament_to_json(
         tournament_data=serialized_tournament,
         folder=TOURNAMENTS_FOLDER,
-        filename=f"{tournament.name.replace(" ", "_").lower()}.json"
+        filename=f"{tournament.tournament_name.replace(" ", "_").lower()}.json"
     )
 
 

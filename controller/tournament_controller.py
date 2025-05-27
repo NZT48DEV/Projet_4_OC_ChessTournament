@@ -1,11 +1,11 @@
 from models.tournament_model import Tournament
-from views.tournament_view import CreateTournamentView
+from views.tournament_view import CreateTournament
 from storage.tournament_data import save_tournament_to_json
 from config import TOURNAMENTS_FOLDER
 
 
 def create_tournament():
-    users_entries = CreateTournamentView().display_create_tournament_menu()
+    users_entries = CreateTournament().display_create_tournament_menu()
 
     tournament = Tournament(
         tournament_name=users_entries["tournament_name"],

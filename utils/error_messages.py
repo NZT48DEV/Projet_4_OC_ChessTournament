@@ -1,5 +1,5 @@
-from rich.console import Console
-from config import MAX_DESCRIPTION_LENGTH, MIN_ROUND, MAX_ROUND
+from rich.console   import Console
+from config         import MAX_DESCRIPTION_LENGTH, MIN_ROUND, MAX_ROUND
 
 
 console = Console()

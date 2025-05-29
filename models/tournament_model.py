@@ -1,5 +1,5 @@
-from models.player_model import Player
-from models.round_model import Round
+from models.player_model    import Player
+from models.round_model     import Round
 
 class Tournament:
     def __init__(

@@ -1,63 +1,109 @@
 import os
-from storage.player_data         import load_players_from_json
-from storage.tournament_data     import save_tournament_to_json
-from config                      import PLAYERS_FOLDER, TOURNAMENTS_FOLDER, TODAY
-from views.tournament_view       import TournamentView
-from models.tournament_model     import Tournament
-from controller.round_controller import RoundController
-from views.round_view            import RoundView
+from storage.player_data            import load_player_from_json
+from storage.tournament_data        import save_tournament_to_json
+from config                         import PLAYERS_FOLDER, TOURNAMENTS_FOLDER, TODAY
+from views.tournament_view          import TournamentView
+from controller.round_controller    import RoundController
+from controller.player_controller   import PlayerController
+from models.tournament_model        import Tournament
+from views.round_view               import RoundView
 
-def create_tournament():
-    # 1. Formulaire de création
-    entries = TournamentView().display_create_tournament_menu()
-    tournament = Tournament(
-        tournament_name  = entries["tournament_name"],
-        location         = entries["location"],
-        start_date       = entries["start_date"],
-        end_date         = entries["end_date"],
-        number_of_rounds = entries.get("number_of_rounds", 4),
-        description      = entries.get("description", "")
-    )
 
-    # 2. Charger et inscrire les joueurs
-    players = load_players_from_json(PLAYERS_FOLDER)
-    if len(players) < 2:
-        RoundView.show_error("Pas assez de joueurs pour démarrer le tournoi.")
-        return
-    tournament.list_of_players = players
+class TournamentController:
+    """
+    Contrôleur pour gérer la création pas à pas,
+    l'inscription des joueurs et l'exécution d'un tournoi.
+    """
+    def __init__(self, filename: str = None):
+        self.tournament: Tournament = None
+        self.filename: str = filename
 
-    # 3. Générer un nom de fichier unique tourné vers la date du jour
-    base     = tournament.tournament_name.replace(' ', '_').lower()
-    counter  = 0
-    filename = f"{base}_{TODAY}.json"
-    filepath = os.path.join(TOURNAMENTS_FOLDER, filename)
+    def _save_progress(self) -> None:
+        """
+        Sauvegarde l'état courant du tournoi dans le fichier JSON.
+        """
+        if not self.filename:
+            # Générer un nom de fichier si pas encore défini
+            base = self.tournament.tournament_name.replace(' ', '_').lower()
+            self.filename = f"{base}_{TODAY}.json"
+        save_tournament_to_json(
+            self.tournament.get_serialized_tournament(),
+            TOURNAMENTS_FOLDER,
+            self.filename
+        )
 
-    # 3.1. Tant que ce fichier existe, on ajoute un suffixe _1, _2, etc.
-    while os.path.exists(filepath):
-        counter += 1
-        filename = f"{base}_{TODAY}_{counter}.json"
-        filepath = os.path.join(TOURNAMENTS_FOLDER, filename)
+    def run(self) -> None:
+        """Démarre la création pas à pas, l'inscription, puis l'exécution du tournoi."""
+        # 1. Création incrémentale du modèle
+        name = TournamentView.ask_tournament_name()
+        self.tournament = Tournament(
+            tournament_name=name,
+            location="",
+            start_date="",
+            end_date="",
+            number_of_rounds=0,
+            description=""
+        )
+        self._save_progress()
+        print(f"Tournoi '{name}' créé et sauvegardé.")
 
-    # 4. Sauvegarde initiale (métadonnées + joueurs)
-    save_tournament_to_json(
-        tournament.get_serialized_tournament(),
-        TOURNAMENTS_FOLDER,
-        filename
-    )
+        loc = TournamentView.ask_location()
+        self.tournament.location = loc
+        self._save_progress()
 
-    # 5. Lancement des rounds via RoundController
-    controller = RoundController(tournament, filename)
-    controller.run()                # orchestrer tous les rounds
+        start = TournamentView.ask_start_date()
+        self.tournament.start_date = start
+        self._save_progress()
 
-    # 6. Récupération des rounds joués et mise à jour du tournoi
-    tournament.actual_round   = tournament.number_of_rounds
-    tournament.list_of_rounds = controller.rounds
+        end = TournamentView.ask_end_date(start)
+        self.tournament.end_date = end
+        self._save_progress()
 
-    # 7. Sauvegarde finale (ajout des rounds et round_score mis à jour)
-    save_tournament_to_json(
-        tournament.get_serialized_tournament(),
-        TOURNAMENTS_FOLDER,
-        filename
-    )
+        rounds = TournamentView.ask_number_of_rounds()
+        self.tournament.number_of_rounds = rounds
+        self._save_progress()
 
-    print("\n Tournoi terminé !")
+        desc = TournamentView.ask_description()
+        self.tournament.description = desc
+        self._save_progress()
+
+        print(f"Tournoi '{self.tournament.tournament_name}' paramétré et sauvegardé étape par étape.")
+
+        # 2. Inscription des joueurs
+        max_players = 2 ** self.tournament.number_of_rounds
+        participants = []
+        print(f"\nInscription des joueurs (max {max_players}).")
+        while len(participants) < max_players:
+            ans = input("Ajouter un joueur (Y/N) ? ").strip().upper()
+            if ans == 'N':
+                break
+            if ans != 'Y':
+                print("Réponse invalide, Y ou N attendu.")
+                continue
+            id_input = input("ID national d'échecs (XX00000) : ").strip().upper()
+            try:
+                player = load_player_from_json(PLAYERS_FOLDER, id_input)
+                print(f"Joueur trouvé : {player.first_name} {player.last_name}")
+            except FileNotFoundError:
+                player = PlayerController.create_player_with_id(id_input)
+                print(f"Nouveau joueur créé : {player.first_name} {player.last_name}")
+            if any(p.id_national_chess == player.id_national_chess for p in participants):
+                print("Ce joueur est déjà inscrit.")
+            else:
+                participants.append(player)
+                self.tournament.list_of_players = participants
+                self._save_progress()
+
+        if len(participants) < 2:
+            RoundView.show_error("Un tournoi nécessite au moins 2 joueurs.")
+            return
+
+        # 3. Exécution des rounds
+        round_controller = RoundController(self.tournament, self.filename)
+        round_controller.run()
+
+        # 4. Sauvegarde finale
+        self.tournament.actual_round = self.tournament.number_of_rounds
+        self.tournament.list_of_rounds = round_controller.rounds
+        self._save_progress()
+        print("\nTournoi terminé !")

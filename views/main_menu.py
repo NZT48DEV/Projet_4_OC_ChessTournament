@@ -1,9 +1,10 @@
-from controller.player_controller       import create_player
-from controller.tournament_controller   import create_tournament
-from storage.player_data                import load_players_from_json   # :contentReference[oaicite:0]{index=0}
-from config                             import PLAYERS_FOLDER           # défini dans config/settings.py
-from views.player_view                  import PlayerView               # doit contenir list_players triée
+from controller.player_controller       import PlayerController
+from controller.tournament_controller   import TournamentController
+from storage.player_data                import load_players_from_json   
+from config                             import PLAYERS_FOLDER           
+from views.player_view                  import PlayerView               
 from utils.console                      import clear_screen
+
 
 class MenuView:
     def display_main_menu(self):
@@ -24,12 +25,13 @@ class MenuView:
 
             if choix == '1':
                 clear_screen()
-                create_player()                     
+                PlayerController.create_player()                   
                 input("\nAppuyez sur Entrée pour revenir au menu principal.")
 
             elif choix == '2':
                 clear_screen()
-                create_tournament()                
+                tournoi = TournamentController()
+                tournoi.run()         
                 input("\nAppuyez sur Entrée pour revenir au menu principal.")
 
             elif choix == '3':

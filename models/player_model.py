@@ -1,40 +1,52 @@
+from typing import List, Dict, Any
+
 class Player:
-    def __init__(self,
+    """
+    Modèle pour un joueur.
+    """
+    def __init__(
+        self,
+        id_national_chess: str,
         first_name: str,
         last_name: str,
         date_of_birth: str,
-        id_national_chess: str,
         tournament_score: float = 0.0,
         rank: int = 0,
-        played_with: list = None,
+        played_with: List[str] = None
     ) -> None:
-        self.first_name        = first_name
-        self.last_name         = last_name
-        self.date_of_birth     = date_of_birth
         self.id_national_chess = id_national_chess
-        self.tournament_score  = tournament_score
-        self.rank              = rank  # départ à 0 pour tous
-        self.played_with       = played_with or []
+        self.first_name = first_name
+        self.last_name = last_name
+        self.date_of_birth = date_of_birth
+        self.tournament_score = tournament_score
+        self.rank = rank
+        self.played_with = played_with if played_with is not None else []
 
-    def __str__(self):
-        return(
-            f"Prénom : {self.first_name}"
-            f"Nom : {self.last_name}"
-            f"Date de naissance : {self.date_of_birth}"
-            f"ID national d'échecs : {self.id_national_chess}"
-            f"Score Tournoi : {self.tournament_score}"
-            f"Classement : {self.rank}"
-            f"A déjà joué avec : {self.played_with}"
-        )
-    
-    def get_serialized_player(self) -> dict:
-        data = {
-            "first_name": self.first_name,
-            "last_name" : self.last_name,
-            "date_of_birth": self.date_of_birth,
+    def get_serialized_player(self) -> Dict[str, Any]:
+        """
+        Sérialise le joueur pour JSON.
+        """
+        return {
             "id_national_chess": self.id_national_chess,
+            "first_name": self.first_name,
+            "last_name": self.last_name,
+            "date_of_birth": self.date_of_birth,
             "tournament_score": self.tournament_score,
             "rank": self.rank,
-            "played_with": self.played_with,
+            "played_with": list(self.played_with)
         }
-        return data
+
+    @classmethod
+    def from_dict(cls, data: Dict[str, Any]) -> 'Player':
+        """
+        Reconstruit une instance Player à partir d'un dict désérialisé.
+        """
+        return cls(
+            id_national_chess=data.get("id_national_chess", ""),
+            first_name=data.get("first_name", ""),
+            last_name=data.get("last_name", ""),
+            date_of_birth=data.get("date_of_birth", ""),
+            tournament_score=data.get("tournament_score", 0.0),
+            rank=data.get("rank", 0),
+            played_with=data.get("played_with", [])
+        )

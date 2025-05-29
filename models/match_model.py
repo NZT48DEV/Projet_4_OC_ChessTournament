@@ -1,6 +1,6 @@
 import random
-from typing import Tuple, Optional, Dict, Any
-from models.player_model import Player
+from typing                 import Tuple, Optional, Dict, Any
+from models.player_model    import Player
 
 
 class Match:

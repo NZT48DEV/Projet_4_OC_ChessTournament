@@ -1,6 +1,6 @@
-from utils.date_helpers import parse_raw_date
-from config import MAX_NAME_LENGTH, DATE_STORAGE_FORMAT, MAX_DESCRIPTION_LENGTH
-from utils.error_messages import invalid_number_of_rounds
+from utils.date_helpers     import parse_raw_date
+from config                 import MAX_NAME_LENGTH, DATE_STORAGE_FORMAT, MAX_DESCRIPTION_LENGTH
+from utils.error_messages   import invalid_number_of_rounds
 
 
 def format_first_name(first_name: str) -> str:

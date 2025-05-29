@@ -1,13 +1,12 @@
-import time
-from models.player_model import Player
-from views.player_view import CreatePlayer
-from storage.player_data import save_player_to_json
-from config import PLAYERS_FOLDER
-from utils.info_messages import player_added_message, player_already_exists_message
+from models.player_model    import Player
+from views.player_view      import PlayerView
+from storage.player_data    import save_player_to_json
+from config                 import PLAYERS_FOLDER
+from utils.info_messages    import player_added_message, player_already_exists_message
 
 def create_player():
 
-    users_entries = CreatePlayer().display_create_player_menu()
+    users_entries = PlayerView().display_create_player_menu()
 
     player = Player(
         users_entries['first_name'],
@@ -28,7 +27,5 @@ def create_player():
         print(player_added_message(player))
     else:
         print(player_already_exists_message(player))
-    
-    time.sleep(2)
     
     

@@ -20,7 +20,7 @@ from utils.error_messages import (
 from utils.input_manager import get_valid_input
 
 
-class CreateTournament:
+class TournamentView:
     def display_create_tournament_menu(self):
         print("\n" + "=" * 40)
         print("🏆    CRÉATION D'UN TOURNOI    🏆")

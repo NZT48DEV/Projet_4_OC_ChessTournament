@@ -1,4 +1,5 @@
 import os
+import datetime
 
 # Dossier des données
 BASE_DATA_FOLDER = "data"
@@ -19,3 +20,5 @@ MIN_ROUND = 1
 MAX_NAME_LENGTH = 40
 MAX_ROUND = 20
 MAX_DESCRIPTION_LENGTH = 500
+
+TODAY = datetime.datetime.now().strftime("%Y%m%d")

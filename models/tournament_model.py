@@ -1,3 +1,6 @@
+from models.player_model import Player
+from models.round_model import Round
+
 class Tournament:
     def __init__(
         self, 
@@ -6,8 +9,8 @@ class Tournament:
         start_date: str, 
         end_date: str, 
         actual_round: int = 0,
-        list_of_players: list = None,
-        list_of_rounds: list = None, 
+        list_of_players: list[Player] = None,
+        list_of_rounds: list[Round] = None, 
         number_of_rounds: int = 4, 
         description: str = ""
         ) -> None:
@@ -22,15 +25,15 @@ class Tournament:
         self.number_of_rounds = number_of_rounds
         self.description = description
     
-    def get_serialized_tournament(self):
+    def get_serialized_tournament(self) -> dict:
         return {
-            "tournament_name": self.tournament_name,
-            "location": self.location,
-            "start_date": self.start_date,
-            "end_date": self.end_date,
-            "actual_round": self.actual_round,
-            "list_of_rounds": self.list_of_rounds,
-            "list_of_players": self.list_of_players,
+            "tournament_name":  self.tournament_name,
+            "location":         self.location,
+            "start_date":       self.start_date,
+            "end_date":         self.end_date,
+            "actual_round":     self.actual_round,
             "number_of_rounds": self.number_of_rounds,
-            "description": self.description
+            "description":      self.description,
+            "list_of_players":  [p.get_serialized_player() for p in self.list_of_players],
+            "list_of_rounds":   [r.get_serialized_round() for r in self.list_of_rounds]
         }

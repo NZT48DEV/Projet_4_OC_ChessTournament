@@ -5,7 +5,7 @@ import datetime
 BASE_DATA_FOLDER = "data"
 
 PLAYERS_FOLDER = os.path.join(BASE_DATA_FOLDER, "players")
-PLAYERS_FILENAME = "players.json"
+PLAYERS_FILENAME = "{id_input}.json"
 
 TOURNAMENTS_FOLDER = os.path.join(BASE_DATA_FOLDER, "tournaments")
 
@@ -16,6 +16,7 @@ DATE_STORAGE_FORMAT = "%d/%m/%Y"
 # Autres constantes
 MIN_PLAYER_AGE = 5
 MIN_ROUND = 1
+MIN_PLAYERS = 2
 
 MAX_NAME_LENGTH = 40
 MAX_ROUND = 20

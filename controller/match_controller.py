@@ -11,7 +11,6 @@ class MatchController:
         # Cas du bye (joueur 2 est None)
         if player_2 is None:
             self.match.match_score_1 = 0.5
-            player_1.tournament_score += 0.5
             print(f"\n{self.match.name} : repos pour {player_1.first_name} {player_1.last_name} (+0.5 point(s))")
             # fige et retourne
             self.match.assign_color()

@@ -82,9 +82,26 @@ class PlayerView:
     
 
     @staticmethod
-    def display_player(player) -> None:
+    def display_player(player: Player) -> None:
         print(f"\nJoueur : {player.first_name} {player.last_name} (ID {player.id_national_chess})")
         print(f"Date de naissance : {player.date_of_birth}")
+
+    @staticmethod
+    def list_players(players: list[Player]) -> None:
+        """
+        Affiche la liste des joueurs triés par nom puis prénom.
+        """
+        clear_screen()
+        print("\n" + "=" * 40)
+        print("👥       LISTE DES JOUEURS       👥")
+        print("=" * 40)
+        # Tri par nom (MAJ) puis prénom (Capitalisé)
+        sorted_list = sorted(
+            players,
+            key=lambda p: (p.last_name.lower(), p.first_name.lower())
+        )
+        for idx, player in enumerate(sorted_list, start=1):
+            print(f"{idx}. {player.last_name.upper()} {player.first_name.capitalize()} (IDN {player.id_national_chess})")
 
     def player_added_message(player: Player) -> str:
         clear_screen()

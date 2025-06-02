@@ -2,7 +2,7 @@ from storage.tournament_data        import save_tournament_to_json
 from config                         import TOURNAMENTS_FOLDER
 from models.round_model             import Round
 from views.round_view               import RoundView
-from controller.match_controller    import MatchController
+from controllers.match_controller    import MatchController
 from models.tournament_model        import Tournament
 from models.player_model            import Player
 

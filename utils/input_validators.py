@@ -141,3 +141,18 @@ def is_valid_description(description: str) -> bool:
     cleaned_description = description.strip()
 
     return len(cleaned_description) == 0 or len(cleaned_description) <= MAX_DESCRIPTION_LENGTH
+
+
+def is_valid_yes_no(value: str) -> bool:
+    """
+    Vérifie que la chaîne formatée est exactement "Y" ou "N".
+
+    À utiliser après avoir appelé `format_yes_no()`.
+
+    Exemple :
+        is_valid_yes_no("Y")  → True
+        is_valid_yes_no("N")  → True
+        is_valid_yes_no("X")  → False
+        is_valid_yes_no("")   → False
+    """
+    return value in ("Y", "N")

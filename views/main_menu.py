@@ -1,9 +1,9 @@
-from controller.player_controller       import PlayerController
-from controller.tournament_controller   import TournamentController
+from controllers.player_controller       import PlayerController
+from controllers.tournament_controller   import TournamentController
 from storage.player_data                import load_players_from_json   
 from config                             import PLAYERS_FOLDER           
 from views.player_view                  import PlayerView               
-from utils.console                      import clear_screen
+from utils.console                      import clear_screen, wait_for_enter_menu, wait_for_enter_rapports
 
 
 class MenuView:
@@ -26,13 +26,13 @@ class MenuView:
             if choix == '1':
                 clear_screen()
                 PlayerController.create_player()                   
-                input("\nAppuyez sur Entrée pour revenir au menu principal.")
+                wait_for_enter_menu()
 
             elif choix == '2':
                 clear_screen()
                 tournoi = TournamentController()
                 tournoi.run()         
-                input("\nAppuyez sur Entrée pour revenir au menu principal.")
+                wait_for_enter_menu()
 
             elif choix == '3':
                 clear_screen()
@@ -44,6 +44,7 @@ class MenuView:
                 break
 
             else:
+                clear_screen()
                 print("Choix invalide, veuillez réessayer.")
 
     def _show_reports_menu(self):
@@ -62,7 +63,7 @@ class MenuView:
                 players = load_players_from_json(PLAYERS_FOLDER)  
                 # 2) Afficher la liste triée via PlayerView (clé : nom, puis prénom)
                 PlayerView.list_players(players)
-                input("\nAppuyez sur Entrée pour revenir aux rapports.")
+                wait_for_enter_rapports()
                 clear_screen()
 
             elif report_choice == '0':
@@ -70,4 +71,5 @@ class MenuView:
                 break
 
             else:
+                clear_screen()
                 print("Choix invalide, veuillez réessayer.")

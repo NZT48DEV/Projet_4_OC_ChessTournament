@@ -2,7 +2,7 @@ import os
 from storage.tournament_data        import save_tournament_to_json
 from config                         import TOURNAMENTS_FOLDER, TODAY
 from views.tournament_view          import TournamentView
-from controller.round_controller    import RoundController
+from controllers.round_controller    import RoundController
 from models.tournament_model        import Tournament
 from views.round_view               import RoundView
 

@@ -116,3 +116,15 @@ def format_description(description: str) -> str:
     - Tronque à 500 caractères
     """
     return description.strip()[:MAX_DESCRIPTION_LENGTH]
+
+
+def format_yes_no(value: str) -> str:
+    """
+    Formatte une saisie en supprimant les espaces 
+    et en passant tout en majuscules.
+
+    Exemple :
+        " y "  → "Y"
+        " n"   → "N"
+    """
+    return value.strip().upper()

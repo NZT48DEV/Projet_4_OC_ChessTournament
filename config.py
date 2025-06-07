@@ -22,4 +22,9 @@ MAX_NAME_LENGTH = 40
 MAX_ROUND = 20
 MAX_DESCRIPTION_LENGTH = 500
 
+BYE_POINT = 0.5
+DRAW_POINT = 0.5
+WIN_POINT = 1.0
+LOSE_POINT = 0.0
+
 TODAY = datetime.datetime.now().strftime("%Y%m%d")

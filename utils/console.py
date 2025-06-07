@@ -16,16 +16,16 @@ def wait_for_enter_continue() -> None:
     """
     Affiche un message et met en pause jusqu’à ce que l’utilisateur appuie sur Entrée.
     """
-    console.input("\nAppuyez sur [b yellow][i]Entrée[/i][/b yellow] pour continuer…")
+    console.input("Appuyez sur [b yellow][i]Entrée[/i][/b yellow] pour continuer…")
 
 def wait_for_enter_menu() -> None:
     """
     Affiche un message et met en pause jusqu’à ce que l’utilisateur appuie sur Entrée.
     """
-    console.input("\nAppuyez sur [b yellow][i]Entrée[/i][/b yellow] pour revenir au menu principal.")
+    console.input("Appuyez sur [b yellow][i]Entrée[/i][/b yellow] pour revenir au menu principal.")
 
 def wait_for_enter_rapports() -> None:
     """
     Affiche un message et met en pause jusqu’à ce que l’utilisateur appuie sur Entrée.
     """
-    console.input("\nAppuyez sur [b yellow][i]Entrée[/i][/b yellow] pour revenir au menu des rapports.")
+    console.input("Appuyez sur [b yellow][i]Entrée[/i][/b yellow] pour revenir au menu des rapports.")

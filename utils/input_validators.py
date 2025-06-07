@@ -8,8 +8,9 @@ from utils.input_formatters     import parse_raw_date
 
 
 def is_valid_name(name: str) -> str:
-    cleaned_name = name.replace(" ", "").replace("-", "")
-    return cleaned_name.isalpha() and len(cleaned_name) >= 2
+    if name is not None:
+        cleaned_name = name.replace(" ", "").replace("-", "")
+        return cleaned_name.isalpha() and len(cleaned_name) >= 2
 
 
 def is_valid_player_birthdate(date_str: str | None) -> bool:

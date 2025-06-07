@@ -3,38 +3,32 @@ from config                 import MAX_NAME_LENGTH, DATE_STORAGE_FORMAT, MAX_DES
 from utils.error_messages   import invalid_number_of_rounds
 
 
-def format_first_name(first_name: str) -> str:
-    """
-    Formate le prénom du joueur
-    - Supprime les espaces en début et en fin de chaîne
-    - Met en majuscule la première lettre de chaque mot
-    - Coupe à MAX_NAME_LENGTH (40 caractères maximum)
-
-    Args:
-        first_name(str): Le prénom du joueur à formater
-
-    Returns:
-        str: Le prénom formaté
-    """
-    first_name = first_name.strip().title()
-    return first_name[:MAX_NAME_LENGTH]
-
-
-def format_last_name(last_name: str) -> str:
+def format_name(last_name: str) -> str:
     """
     Formate le nom du joueur
     - Supprime les espaces en début et en fin de chaîne
     - Convertit tous les caractères en majuscules
-    - Coupe à MAX_NAME_LENGTH (40 caractères maximum)
+    - Vérifie que la longueur du last_name soit inférieur ou = a MAX_NAME_LENGTH (40 caractères maximum)
 
     Args:
         last_name(str): Le nom du joueur à formater
 
     Returns:
+        None 
+        ou
         str: Le nom formaté
     """
     last_name = last_name.strip().upper()
-    return last_name[:MAX_NAME_LENGTH]
+    if len(last_name) > MAX_NAME_LENGTH:
+        return None
+    return last_name
+
+def format_first_name(first_name: str) -> str:
+
+    first_name = first_name.strip().capitalize()
+    if len(first_name) > MAX_NAME_LENGTH:
+        return None
+    return first_name
 
 
 def format_tournament_name(tournament_name: str) -> str:
@@ -113,9 +107,8 @@ def format_description(description: str) -> str:
     """
     Nettoie la description :
     - Supprime les espaces en début/fin
-    - Tronque à 500 caractères
     """
-    return description.strip()[:MAX_DESCRIPTION_LENGTH]
+    return description.strip()
 
 
 def format_yes_no(value: str) -> str:

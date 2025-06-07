@@ -1,6 +1,6 @@
 from utils.input_formatters     import (
                                         format_first_name,
-                                        format_last_name,
+                                        format_name,
                                         format_date,
                                         format_id_national_chess,
                                     )
@@ -11,8 +11,9 @@ from utils.input_validators     import (
                                     )
 from utils.error_messages       import (
                                         invalid_name,
-                                        invalid_date,
+                                        invalid_date_of_birth,
                                         invalid_id_national_chess,
+                                        player_already_in_tournament_text
                                     )
 from utils.info_messages        import (
                                         player_added_text,
@@ -72,7 +73,7 @@ class PlayerView:
         print("="*40)
         return get_valid_input(
             prompt="Nom : ",
-            formatter=format_last_name,
+            formatter=format_name,
             validator=is_valid_name,
             message_error=invalid_name,
         )
@@ -87,18 +88,14 @@ class PlayerView:
             prompt="Date de naissance (JJMMAAAA) : ",
             formatter=format_date,
             validator=is_valid_player_birthdate,
-            message_error=invalid_date,
+            message_error=invalid_date_of_birth,
         )
     
     @staticmethod
     def list_players(players: list[Player]) -> None:
         """
-        Affiche la liste des joueurs triés par nom puis prénom.
+        Tri la liste des joueurs par nom (MAJ) puis prénom (Capitalisé).
         """
-        clear_screen()
-        print("\n" + "=" * 40)
-        print("👥         LISTE DES JOUEURS         👥")
-        print("=" * 40)
         # Tri par nom (MAJ) puis prénom (Capitalisé)
         sorted_list = sorted(
             players,
@@ -156,3 +153,10 @@ class PlayerView:
     @staticmethod
     def display_player_added_to_chesstournament_text(player: Player) -> None:
         console.print(player_added_to_chesstournament_text(player))
+    
+    @staticmethod
+    def display_duplicate_player(id_national: str) -> None:
+        """
+        Affiche “le joueur est déjà inscrit dans ce tournoi”.
+        """
+        console.print(player_already_in_tournament_text(id_national))

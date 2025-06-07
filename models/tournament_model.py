@@ -5,14 +5,14 @@ class Tournament:
     def __init__(
         self, 
         tournament_name: str, 
-        location: str, 
-        start_date: str, 
-        end_date: str, 
+        location: str = None, 
+        start_date: str = None, 
+        end_date: str = None, 
         actual_round: int = 0,
         list_of_players: list[Player] = None,
         list_of_rounds: list[Round] = None, 
-        number_of_rounds: int = 4, 
-        description: str = ""
+        number_of_rounds: int = None, 
+        description: str = None
         ) -> None:
 
         self.tournament_name = tournament_name
@@ -34,6 +34,6 @@ class Tournament:
             "actual_round":     self.actual_round,
             "number_of_rounds": self.number_of_rounds,
             "description":      self.description,
-            "list_of_players":  [p.get_serialized_player() for p in self.list_of_players],
+            "list_of_players":  [p.get_tournament_data() for p in self.list_of_players],
             "list_of_rounds":   [r.get_serialized_round() for r in self.list_of_rounds]
         }

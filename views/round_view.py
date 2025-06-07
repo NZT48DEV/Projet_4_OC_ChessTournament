@@ -1,48 +1,62 @@
-from typing                 import List
-from models.match_model     import Match
-from models.round_model     import Round
-from models.player_model    import Player
-
+from typing                     import List
+from models.round_model         import Round
+from models.player_model        import Player
+from rich.console               import Console
+from rich.panel                 import Panel
+from rich.text                  import Text
+from utils.console              import clear_screen
 
 class RoundView:
+    console = Console()
+
     @staticmethod
     def show_error(message: str) -> None:
-        print(f"Erreur: {message}")
-
-    @staticmethod
-    def show_round_start(rnd: Round) -> None:
-        print(f"\n{rnd.round_number} - Début")
-
-    @staticmethod
-    def ask_match_result(match: Match) -> int:
-        print(f"\n{match.get_player_info(match.player_1)} vs {match.get_player_info(match.player_2)}")
-        print("1: jouer joue 1, 2: joueur 2 gagne, 3: égalité")
-        while True:
-            choice = input("> ")
-            if choice in ("1", "2", "3"):
-                return int(choice)
-            print("Entrée invalide")
-
-    @staticmethod
-    def show_match_results(matches: List[Match]) -> None:
-        for match in matches:
-            print(match.get_result())
+        RoundView.console.print(f"[bold red]Erreur:[/bold red] {message}")
 
     @staticmethod
     def show_intermediate_ranking(players: List[Player]) -> None:
         """
         Affiche le classement intermédiaire en montrant
-        le rang, le nom et le score de tournoi.
+        le rang, le nom et le score de tournoi,
+        avec alignement des IDN et des scores.
         """
-        print("\nClassement intermédiaire :\n")
-        # On trie par rank croissant
+        RoundView.console.print("\n[b yellow]Classement intermédiaire[/b yellow]\n")
+
+        # Préparer deux listes : 
+        # - left_parts contiendra "1. Prénom NOM"
+        # - id_parts contiendra "(IDN)"
+        # - score_parts contiendra "1.5"
+        entries = []
         for player in sorted(players, key=lambda p: p.rank):
-            print(f"{player.rank} – {player.first_name} {player.last_name} : {player.tournament_score}")
+            left = f"{player.rank}. {player.first_name} {player.last_name}"
+            idn = f"({player.id_national_chess})"
+            score_str = f"{player.tournament_score:.1f}"
+            entries.append((left, idn, score_str))
+
+        # Calculer la largeur max pour le texte de nom (left) et pour l'IDN (idn)
+        max_left_width = max(len(left) for left, _, _ in entries)
+        max_idn_width = max(len(idn) for _, idn, _ in entries)
+
+        # Afficher chaque ligne en alignant d'abord la partie "nom", puis "IDN", puis ": score"
+        for left, idn, score_str in entries:
+            # Espaces pour aligner les IDN
+            pad_left = " " * (max_left_width - len(left))
+            # Espaces pour aligner les deux-points après l'IDN
+            pad_idn = " " * (max_idn_width - len(idn))
+            RoundView.console.print(f"{left}{pad_left} {idn}{pad_idn} : [b]{score_str}[/b]")
 
     @staticmethod
     def show_round_report(rnd: Round) -> None:
-        print(rnd.get_round_report())
+        clear_screen()
+        header = Text(f"{rnd.round_number}  ", style="bold white on blue")
+        header.append("– Récap", style="bold white on blue")
+        RoundView.console.print(Panel(header, expand=False, border_style="blue"))
+        RoundView.console.print(rnd.get_round_report())
 
     @staticmethod
-    def show_round_end(rnd: Round) -> None:
-        print(f"\n{rnd.round_number} terminé à {rnd.get_formatted_end_time()}")
+    def show_start_round(rnd: Round) -> None:
+        clear_screen()
+        header = Text(f"{rnd.round_number}  ", style="bold white on blue")
+        header.append("– En cours", style="bold white on blue")
+        RoundView.console.print(Panel(header, expand=False, border_style="blue"))
+    

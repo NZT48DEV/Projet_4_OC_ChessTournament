@@ -99,20 +99,20 @@ Vous verrez le **menu principal** :
 
 **Les flux** :
 
-1. **Créer** quelques joueurs via le menu (nom, prénom, date de naissance, classement).
-2. **Créer un tournoi** 
-    1. saisissez nom, lieu, date de début, date de fin et nombre de rounds
-    2. sélectionnez/ajoutez les joueurs 
-    3. démarrez ou non le tournoi.
-3. **Charger un tournoi** reprenez un tournoi existant (en cours ou non) pour poursuivre sa gestion.
-4. **Afficher les rapports** .
-    1. Liste des joueurs (ordre alphabétique)
-    2. Liste des tournois enregistrés
-    3. Infos d’un tournoi (nom, dates)
-    4. Liste des joueurs d’un tournoi (ordre alphabétique)
-    5. Liste des rounds et matches d’un tournoi
-    0. Retour au menu principal
-0. **Quitter**, fermeture du programme.
+1. 🧑 **Créer** quelques joueurs via le menu (nom, prénom, date de naissance, classement).
+2. 🏆 **Créer un tournoi** 
+    - saisissez nom, lieu, date de début, date de fin et nombre de rounds
+    - sélectionnez/ajoutez les joueurs 
+    - démarrez ou non le tournoi.
+3. 📂 **Charger un tournoi** reprenez un tournoi existant (en cours ou non) pour poursuivre sa gestion.
+4. 📊 **Afficher les rapports** .
+    - 1. Liste des joueurs (ordre alphabétique)
+    - 2. Liste des tournois enregistrés
+    - 3. Infos d’un tournoi (nom, dates)
+    - 4. Liste des joueurs d’un tournoi (ordre alphabétique)
+    - 5. Liste des rounds et matches d’un tournoi
+    - 0. Retour au menu principal
+0. ❌ **Quitter**, fermeture du programme.
 
 ---
 
@@ -129,6 +129,8 @@ Le programme gère :
 - **Rapport de ronde formaté** : génération d’un rapport console clair, avec les byes listés en premier, présentation alignée des noms, identifiants, couleurs et scores.
 
 - **Sérialisation JSON** : conversion des rounds et matchs en dictionnaires prêts à être persistés avec dates et scores formatés.
+
+- **Enregistrement et persistance en temps réel** : Les données associés au tournoi (match_score/tournament_score/rank/etc.) sont mis à jour et sauvegardés après chaque action utilisateur, et peuvent être rechargés à tout moment via l’option Charger un tournoi.
 
 ---
 

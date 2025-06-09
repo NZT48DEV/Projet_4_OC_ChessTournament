@@ -5,12 +5,12 @@ def update_ranks(tournament: Tournament) -> None:
     """
     Recalcule et assigne les rangs (dense ranking) de tous les joueurs
     d'un tournoi en fonction de leur `tournament_score`.
-    
+
     Principe dense ranking :
       - Score max → rank = 1
       - Score suivant → rank = 2 (même si plusieurs 1ers ex æquo)
       - etc.
-    
+
     Modifie in-place : player.rank pour chaque Player dans tournament.list_of_players.
     """
     # Trie décroissant par score, puis par ID pour une ordre déterministe

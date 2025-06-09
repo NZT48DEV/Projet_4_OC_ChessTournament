@@ -1,18 +1,14 @@
 import os
-from rich.console                       import Console
+from rich.console import Console
 
-from config                             import PLAYERS_FOLDER, TOURNAMENTS_FOLDER, ENTER_FOR_RAPPORT
-from controllers.tournament_controller  import TournamentController
-from models.player_model                import Player
-from storage.player_data                import load_players_from_json, load_player_from_json
-from storage.tournament_data            import load_tournament_from_json
-from utils.console                      import clear_screen, wait_for_enter
-from utils.info_messages                import prompt_file_to_load
-from views.tournament_view              import TournamentView
-
-
-
-
+from config import PLAYERS_FOLDER, TOURNAMENTS_FOLDER, ENTER_FOR_RAPPORT
+from controllers.tournament_controller import TournamentController
+from models.player_model import Player
+from storage.player_data import load_players_from_json, load_player_from_json
+from storage.tournament_data import load_tournament_from_json
+from utils.console import clear_screen, wait_for_enter
+from utils.info_messages import prompt_file_to_load
+from views.tournament_view import TournamentView
 
 
 console = Console()
@@ -100,7 +96,7 @@ class ReportsView:
 
         data = load_tournament_from_json(chemin)
         miss_info = "[Info manquante]"
-        no_desc   = "[Pas de description]"
+        no_desc = "[Pas de description]"
 
         clear_screen()
         print("\n" + "=" * 40)
@@ -115,15 +111,15 @@ class ReportsView:
         if lieu is None:
             print(f"Lieu            : {miss_info}")
         elif lieu == "":
-            print(f"Lieu            : [Pas de lieu]")
+            print("Lieu            : [Pas de lieu]")
         else:
             print(f"Lieu            : {lieu}")
 
         # Période
         start = data.get("start_date", None)
-        end   = data.get("end_date", None)
+        end = data.get("end_date", None)
         start_str = miss_info if start is None else start
-        end_str   = miss_info if end is None   else end
+        end_str = miss_info if end is None else end
         print(f"Période         : {start_str} → {end_str}")
 
         # Nombre de rounds
@@ -145,7 +141,6 @@ class ReportsView:
         print()
         wait_for_enter(ENTER_FOR_RAPPORT)
         clear_screen()
-
 
     @staticmethod
     def list_players_for_tournament():
@@ -202,7 +197,6 @@ class ReportsView:
         print()
         wait_for_enter(ENTER_FOR_RAPPORT)
         clear_screen()
-
 
     @staticmethod
     def list_rounds_and_matches_for_tournament():

@@ -1,11 +1,12 @@
 from __future__ import annotations
-from typing     import List, Dict, Any
+from typing import List, Dict, Any
 
 
 class Player:
     """
     Modèle pour un joueur.
     """
+
     def __init__(
         self,
         id_national_chess: str,
@@ -37,7 +38,7 @@ class Player:
             "rank": self.rank,
             "played_with": list(self.played_with)
         }
-    
+
     def get_tournament_data(self) -> dict:
         """
         Sérialisation “light” pour intégrer le joueur dans un tournoi :
@@ -45,9 +46,9 @@ class Player:
         """
         return {
             "id_national_chess": self.id_national_chess,
-            "tournament_score":  self.tournament_score,
-            "rank":              self.rank,
-            "played_with":       self.played_with,
+            "tournament_score": self.tournament_score,
+            "rank": self.rank,
+            "played_with": self.played_with,
         }
 
     @classmethod

@@ -18,7 +18,7 @@ def save_tournament_to_json(tournament_data, folder, filename):
 def load_tournament_from_json(filepath: str) -> dict:
     """
     Lit et retourne le contenu d'un fichier JSON de tournoi.
-    
+
     - `filepath` doit être le chemin complet vers un fichier .json existant.
     - Si le fichier n'existe pas, on lève FileNotFoundError.
     - Si le contenu n'est pas un JSON valide, on lève json.JSONDecodeError.

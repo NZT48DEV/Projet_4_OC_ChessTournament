@@ -1,12 +1,12 @@
-from config                 import PLAYERS_FOLDER, ENTER_FOR_CONTINUE
-from models.player_model    import Player
-from storage.player_data    import load_player_from_json, save_player_to_json 
-from utils.input_manager    import get_valid_input
+from config import PLAYERS_FOLDER, ENTER_FOR_CONTINUE
+from models.player_model import Player
+from storage.player_data import load_player_from_json, save_player_to_json
+from utils.input_manager import get_valid_input
 from utils.input_formatters import format_yes_no
 from utils.input_validators import is_valid_yes_no
-from utils.error_messages   import invalid_yes_no
-from utils.console          import wait_for_enter
-from views.player_view      import PlayerView
+from utils.error_messages import invalid_yes_no
+from utils.console import wait_for_enter
+from views.player_view import PlayerView
 
 
 class PlayerController:
@@ -111,7 +111,7 @@ class PlayerController:
                         player, ["first_name", "last_name", "date_of_birth"]
                     )
                     PlayerView.display_player_updated(player)
-            
+
             return player
 
         except FileNotFoundError:

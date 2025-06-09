@@ -1,14 +1,12 @@
-from typing                 import List
-from rich.console           import Console
-from rich.table             import Table
-from rich.panel             import Panel
-from rich.text              import Text
-from rich.box               import ROUNDED, SIMPLE
+from typing import List
+from rich.console import Console
+from rich.table import Table
+from rich.panel import Panel
+from rich.text import Text
+from rich.box import ROUNDED, SIMPLE
 
-from config                 import DRAW_POINT, BYE_POINT, WIN_POINT
-from models.match_model     import Match
-
-
+from config import DRAW_POINT, BYE_POINT, WIN_POINT
+from models.match_model import Match
 
 
 class MatchView:
@@ -34,19 +32,21 @@ class MatchView:
             border_style="magenta",
             box=ROUNDED,
             expand=False,
-            padding=(0,1)
+            padding=(0, 1)
         )
 
         # Table de choix
-        choix_table = Table(show_header=False, box=SIMPLE, expand=False, padding=(0,1))
+        choix_table = Table(show_header=False, box=SIMPLE, expand=False, padding=(0, 1))
         choix_table.add_column("C", justify="center", no_wrap=True, width=3)
         choix_table.add_column("Candidat", justify="left")
-        choix_table.add_row("[bold green]1[/bold green]", f"{p1.first_name} {p1.last_name} ({p1.id_national_chess}) ({match.color_player_1})")
-        choix_table.add_row("[bold red]2[/bold red]",   f"{p2.first_name} {p2.last_name} ({p2.id_national_chess}) ({match.color_player_2})")
+        choix_table.add_row("[bold green]1[/bold green]",
+                            f"{p1.first_name} {p1.last_name} ({p1.id_national_chess}) ({match.color_player_1})")
+        choix_table.add_row("[bold red]2[/bold red]",
+                            f"{p2.first_name} {p2.last_name} ({p2.id_national_chess}) ({match.color_player_2})")
         choix_table.add_row("[bold yellow]3[/bold yellow]", "Égalité")
 
         MatchView.console.print(panel_title)
-        MatchView.console.print() 
+        MatchView.console.print()
         MatchView.console.print(Text("Qui gagne ?", style="bold white", justify="center"))
         MatchView.console.print()
         MatchView.console.print(choix_table)
@@ -62,7 +62,7 @@ class MatchView:
     @staticmethod
     def format_result(match: Match) -> Text:
         """
-        Construit et renvoie un Text Rich du résultat, 
+        Construit et renvoie un Text Rich du résultat,
         selon match.result_type() et match.get_winner().
         """
         t = match.result_type()
@@ -96,7 +96,7 @@ class MatchView:
     @staticmethod
     def show_match_results(matches: Match | List[Match]) -> None:
         """
-        Affiche un ou plusieurs résultats : 
+        Affiche un ou plusieurs résultats :
         utilise format_result() au lieu de match.get_result().
         """
         if isinstance(matches, Match):

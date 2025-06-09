@@ -1,13 +1,13 @@
-from config                         import TOURNAMENTS_FOLDER, ENTER_FOR_MAIN_MENU
-from controllers.match_controller   import MatchController
-from storage.tournament_data        import save_tournament_to_json
-from models.match_model             import Match
-from models.player_model            import Player
-from models.round_model             import Round
-from models.tournament_model        import Tournament
-from utils.console                  import wait_for_enter
-from views.round_view               import RoundView
-from views.tournament_view          import TournamentView
+from config import TOURNAMENTS_FOLDER, ENTER_FOR_MAIN_MENU
+from controllers.match_controller import MatchController
+from storage.tournament_data import save_tournament_to_json
+from models.match_model import Match
+from models.player_model import Player
+from models.round_model import Round
+from models.tournament_model import Tournament
+from utils.console import wait_for_enter
+from views.round_view import RoundView
+from views.tournament_view import TournamentView
 
 
 class RoundController:
@@ -15,6 +15,7 @@ class RoundController:
     Contrôleur pour gérer l'enchaînement des rounds d'un tournoi,
     et sauvegarder l'état du tournoi après chaque match.
     """
+
     def __init__(self,
                  tournament: Tournament,
                  filename: str):
@@ -119,8 +120,8 @@ class RoundController:
         """
         mc = MatchController(
             match=match,
-            current_round=rnd, 
-            tournament=self.tournament, 
+            current_round=rnd,
+            tournament=self.tournament,
             filename=self.filename)
         try:
             mc.run()

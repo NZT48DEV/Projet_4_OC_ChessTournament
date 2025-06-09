@@ -1,49 +1,50 @@
 import os
-from rich.console                   import Console
-from rich.table                     import Table
-from rich                           import box 
+from rich.console import Console
+from rich.table import Table
+from rich import box
 
-from config                         import PLAYERS_FOLDER, PLAYERS_FILENAME, ENTER_FOR_CONTINUE, DEFAULT_NUMBER_OF_ROUND
-from controllers.player_controller  import PlayerController
-from models.player_model            import Player
-from models.tournament_model        import Tournament
-from utils.console                  import wait_for_enter
-from utils.console                  import clear_screen
-from utils.input_manager            import get_valid_input
-from views.player_view              import PlayerView
-from utils.input_formatters         import (format_tournament_name,
-                                            format_date,
-                                            format_location_name,
-                                            format_number_of_rounds,
-                                            format_description,
-                                            format_id_national_chess,)
-from utils.error_messages           import (invalid_tournament_name,
-                                            invalid_tournament_date,
-                                            invalid_location_name,
-                                            invalid_number_of_rounds,
-                                            invalid_description,
-                                            invalid_id_national_chess,)
-from utils.info_messages            import (tournament_incomplete_text,
-                                            tournament_info_text,
-                                            player_already_in_tournament_text)
-from utils.input_validators         import (is_valid_tournament_name,
-                                            is_valid_start_date,
-                                            is_valid_end_date,
-                                            is_valid_location_name,
-                                            is_valid_number_of_rounds,
-                                            is_valid_description,
-                                            is_valid_id_national_chess)
+from config import PLAYERS_FOLDER, PLAYERS_FILENAME, ENTER_FOR_CONTINUE, DEFAULT_NUMBER_OF_ROUND
+from controllers.player_controller import PlayerController
+from models.player_model import Player
+from models.tournament_model import Tournament
+from utils.console import wait_for_enter
+from utils.console import clear_screen
+from utils.input_manager import get_valid_input
+from views.player_view import PlayerView
+from utils.input_formatters import (format_tournament_name,
+                                    format_date,
+                                    format_location_name,
+                                    format_number_of_rounds,
+                                    format_description,
+                                    format_id_national_chess,)
+from utils.error_messages import (invalid_tournament_name,
+                                  invalid_tournament_date,
+                                  invalid_location_name,
+                                  invalid_number_of_rounds,
+                                  invalid_description,
+                                  invalid_id_national_chess,)
+from utils.info_messages import (tournament_incomplete_text,
+                                 tournament_info_text,
+                                 player_already_in_tournament_text)
+from utils.input_validators import (is_valid_tournament_name,
+                                    is_valid_start_date,
+                                    is_valid_end_date,
+                                    is_valid_location_name,
+                                    is_valid_number_of_rounds,
+                                    is_valid_description,
+                                    is_valid_id_national_chess)
 
 
 console = Console()
+
 
 class TournamentView:
     @staticmethod
     def ask_tournament_name() -> str:
         clear_screen()
-        print("\n" + "="*40)
+        print("\n" + "=" * 40)
         print("🏆           NOM DU TOURNOI           🏆")
-        print("="*40)
+        print("=" * 40)
         return get_valid_input(
             prompt="Nom du tournoi : ",
             formatter=format_tournament_name,
@@ -54,9 +55,9 @@ class TournamentView:
     @staticmethod
     def ask_location() -> str:
         clear_screen()
-        print("\n" + "="*40)
+        print("\n" + "=" * 40)
         print("📍          LIEU DU TOURNOI           📍")
-        print("="*40)
+        print("=" * 40)
         return get_valid_input(
             prompt="Lieu : ",
             formatter=format_location_name,
@@ -67,9 +68,9 @@ class TournamentView:
     @staticmethod
     def ask_start_date() -> str:
         clear_screen()
-        print("\n" + "="*40)
+        print("\n" + "=" * 40)
         print("📅            DATE DE DÉBUT           📅")
-        print("="*40)
+        print("=" * 40)
         return get_valid_input(
             prompt="Date de début (JJMMAAAA) : ",
             formatter=format_date,
@@ -80,9 +81,9 @@ class TournamentView:
     @staticmethod
     def ask_end_date(start_date: str) -> str:
         clear_screen()
-        print("\n" + "="*40)
+        print("\n" + "=" * 40)
         print("📅            DATE DE FIN             📅")
-        print("="*40)
+        print("=" * 40)
         return get_valid_input(
             prompt="Date de fin (JJMMAAAA) : ",
             formatter=format_date,
@@ -93,9 +94,9 @@ class TournamentView:
     @staticmethod
     def ask_number_of_rounds() -> int:
         clear_screen()
-        print("\n" + "="*40)
+        print("\n" + "=" * 40)
         print("🔢           NOMBRE DE ROUNDS         🔢")
-        print("="*40)
+        print("=" * 40)
         return get_valid_input(
             prompt=f"Nombre de rounds (par défaut {DEFAULT_NUMBER_OF_ROUND}) : ",
             formatter=format_number_of_rounds,
@@ -141,7 +142,6 @@ class TournamentView:
         else:
             print("[Aucun joueur inscrit]\n")
 
-
     @staticmethod
     def show_registration_header(current_count: int, max_players: int):
         """
@@ -149,7 +149,7 @@ class TournamentView:
         “♟️➕ INSCRIPTION DES JOUEURS ➕♟️” + “Nombre de joueurs inscrits : current_count / max_players”
         """
         print("\n" + "=" * 40)
-        print(f"♟️➕     INSCRIPTION DES JOUEURS     ➕♟️")
+        print("♟️➕     INSCRIPTION DES JOUEURS     ➕♟️")
         print("=" * 40 + "\n")
         print(f"Nombre de joueurs inscrits : {current_count} / {max_players}\n")
 
@@ -190,7 +190,7 @@ class TournamentView:
 
         # 5. Retourner le Player complet
         return player
-    
+
     @staticmethod
     def display_player_already_in_tournament_text(id_national: str):
         console.print(player_already_in_tournament_text(id_national))
@@ -264,7 +264,7 @@ class TournamentView:
             # Date de début ou “[Pas commencé]” si start_time est None
             start = rnd.get_formatted_start_time() if rnd.start_time else "[Pas commencé]"
             # Date de fin ou “[En cours]” si end_time est None
-            end   = rnd.get_formatted_end_time()   if rnd.end_time   else "[En cours]"
+            end = rnd.get_formatted_end_time() if rnd.end_time else "[En cours]"
             console.print(f"   • Début : {start} | Fin : {end}")
 
             table = Table(box=box.MINIMAL, show_edge=False)
@@ -283,14 +283,14 @@ class TournamentView:
                 # Cas « match de repos » : player_2 est None
                 if match.player_2 is None:
                     p1_snap = match._snap1
-                    id1     = p1_snap.get("id_national_chess", "")
+                    id1 = p1_snap.get("id_national_chess", "")
                     # Récupérer le Player complet depuis players_map
                     if id1 in players_map:
                         p1_full: Player = players_map[id1]
-                        nom1    = p1_full.last_name
+                        nom1 = p1_full.last_name
                         prenom1 = p1_full.first_name
                     else:
-                        nom1    = "[?]"
+                        nom1 = "[?]"
                         prenom1 = "[?]"
 
                     sc1 = p1_snap.get("match_score", None)
@@ -312,25 +312,25 @@ class TournamentView:
                     p1_snap = match._snap1 or {}
                     p2_snap = match._snap2 or {}
 
-                    id1     = p1_snap.get("id_national_chess", "")
-                    id2     = p2_snap.get("id_national_chess", "")
+                    id1 = p1_snap.get("id_national_chess", "")
+                    id2 = p2_snap.get("id_national_chess", "")
 
                     # Nom/prénom réel pour le joueur 1
                     if id1 in players_map:
                         p1_full: Player = players_map[id1]
-                        nom1    = p1_full.last_name
+                        nom1 = p1_full.last_name
                         prenom1 = p1_full.first_name
                     else:
-                        nom1    = "[?]"
+                        nom1 = "[?]"
                         prenom1 = "[?]"
 
                     # Nom/prénom réel pour le joueur 2
                     if id2 in players_map:
                         p2_full: Player = players_map[id2]
-                        nom2    = p2_full.last_name
+                        nom2 = p2_full.last_name
                         prenom2 = p2_full.first_name
                     else:
-                        nom2    = "[?]"
+                        nom2 = "[?]"
                         prenom2 = "[?]"
 
                     sc1 = p1_snap.get("match_score", None)

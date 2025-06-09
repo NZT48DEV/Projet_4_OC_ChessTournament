@@ -1,8 +1,7 @@
-from rich.console               import Console
+from rich.console import Console
 
-from models.player_model        import Player
-from models.tournament_model    import Tournament
-
+from models.player_model import Player
+from models.tournament_model import Tournament
 
 
 console = Console()
@@ -71,7 +70,7 @@ def tournament_info_text(tournament: Tournament) -> str:
         str: bloc de texte formaté pour affichage console.
     """
     miss_info = "[Info manquante]"
-    no_desc   = "[Pas de description]"
+    no_desc = "[Pas de description]"
 
     # 1) Préparer chaque champ dans une variable “formatée”
     name = tournament.tournament_name
@@ -117,46 +116,46 @@ def tournament_info_text(tournament: Tournament) -> str:
     )
 
 
-
 def player_already_exist_text() -> str:
-    return(
+    return (
         "\n[b yellow][INFO][/b yellow] [b]Le profil du joueur est déjà existant.[/b]\n"
     )
 
 
 def player_added_text() -> str:
-    return(
+    return (
         "\n[b yellow][INFO][/b yellow] [b]Joueur créé avec succès.[/b]\n"
     )
 
 
 def player_updated_text() -> str:
-    return(
+    return (
         "\n[b yellow][INFO][/b yellow] [b]Profil du joueur complété avec succès.[/b]\n"
     )
 
 
 def player_incomplete_text() -> str:
-    return(
-        "[b yellow][INFO][/b yellow] [b]Ce joueur existe déjà, mais ses informations sont [underline]incomplètes[/underline].[/b]\n"
+    return (
+        "[b yellow][INFO][/b yellow] Ce joueur [b]existe déjà[/b]"
+        ", mais ses informations sont [b][underline]incomplètes[/underline].[/b]\n"
         "Veuillez ajouter les informations manquantes au profil de l'utilisateur\n"
     )
 
 
 def player_added_to_chesstournament_text(id_national: str) -> str:
-    return(
+    return (
         f"[b yellow][INFO][/b yellow] Le joueur ({id_national}) a été ajouté au tournoi.\n")
 
 
 def player_nonexistent_text(id_national: str) -> str:
-    return(
+    return (
         f"\n[b yellow][INFO][/b yellow] [b]Aucun profil de joueur trouvé pour cet ID : {id_national}.[/b]\n"
         "Veuillez créer un nouveau profil pour ce joueur."
     )
 
 
 def tournament_incomplete_text() -> str:
-    return(
+    return (
         "[b yellow][INFO][/b yellow] [b]Il manque des [underline]informations[/underline] pour ce tournoi.[/b]\n"
         "Veuillez ajouter les informations manquantes au tournoi\n"
     )
@@ -168,8 +167,9 @@ def player_already_in_tournament_text(id_national: str) -> str:
         "Veuillez en choisir un autre.\n"
     )
 
+
 def prompt_file_to_load() -> str:
-    return(
+    return (
         "\nEntrez le nom [b u]exact[/b u] du fichier "
         "(ou laissez vide et appuyez sur [b yellow]Entrée[/b yellow] pour annuler)."
     )

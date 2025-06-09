@@ -1,8 +1,8 @@
 import random
-from typing                 import Tuple, Optional, Dict, Any
+from typing import Tuple, Optional, Dict, Any
 
-from config                 import DRAW_POINT, WIN_POINT, LOSE_POINT, BYE_POINT
-from models.player_model    import Player
+from config import DRAW_POINT, WIN_POINT, LOSE_POINT, BYE_POINT
+from models.player_model import Player
 
 
 class Match:
@@ -14,6 +14,7 @@ class Match:
       - préparation de snapshots pour la persistance
       - sérialisation JSON
     """
+
     def __init__(
         self,
         name: str,
@@ -51,9 +52,15 @@ class Match:
         if self.player_2 is None:
             return f"{self.player_1.first_name} {self.player_1.last_name} – Repos : {self.match_score_1} point(s)"
         return (
-            f"{self.player_1.first_name} {self.player_1.last_name} [{self.color_player_1}] : {self.match_score_1} point(s)\n"
-            f"{self.player_2.first_name} {self.player_2.last_name} [{self.color_player_2}] : {self.match_score_2} point(s)"
-        )
+            f"{
+                self.player_1.first_name} {
+                self.player_1.last_name} [{
+                self.color_player_1}] : {
+                    self.match_score_1} point(s)\n" f"{
+                        self.player_2.first_name} {
+                            self.player_2.last_name} [{
+                                self.color_player_2}] : {
+                                    self.match_score_2} point(s)")
 
     def assign_color(self) -> None:
         """
@@ -200,7 +207,7 @@ class Match:
         if self.winner is None:
             winner_field = "draw"
         else:
-            winner_field = { "id_national_chess": self.winner.id_national_chess }
+            winner_field = {"id_national_chess": self.winner.id_national_chess}
 
         return {
             "name": self.name,

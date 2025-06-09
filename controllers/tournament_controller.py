@@ -11,19 +11,19 @@ from config import (
     ENTER_FOR_CONTINUE,
     ENTER_FOR_MAIN_MENU
 )
-from controllers.round_controller   import RoundController
-from models.match_model             import Match
-from models.player_model            import Player
-from models.round_model             import Round
-from models.tournament_model        import Tournament
-from storage.player_data            import load_player_from_json
-from storage.tournament_data        import save_tournament_to_json
-from utils.input_manager            import get_valid_input
-from utils.console                  import clear_screen, wait_for_enter
-from utils.error_messages           import invalid_yes_no
-from utils.input_formatters         import format_yes_no
-from utils.input_validators         import is_valid_yes_no
-from views.tournament_view          import TournamentView
+from controllers.round_controller import RoundController
+from models.match_model import Match
+from models.player_model import Player
+from models.round_model import Round
+from models.tournament_model import Tournament
+from storage.player_data import load_player_from_json
+from storage.tournament_data import save_tournament_to_json
+from utils.input_manager import get_valid_input
+from utils.console import clear_screen, wait_for_enter
+from utils.error_messages import invalid_yes_no
+from utils.input_formatters import format_yes_no
+from utils.input_validators import is_valid_yes_no
+from views.tournament_view import TournamentView
 
 
 class TournamentController:
@@ -34,6 +34,7 @@ class TournamentController:
       - Inscription des joueurs
       - Lancement et reprise des rounds
     """
+
     def __init__(self, filename: str = None):
         """
         Initialise le controller.
@@ -70,7 +71,7 @@ class TournamentController:
 
         if not self._ask_to_start():
             return
-        
+
         self._start_rounds()
 
     def _create_empty_tournament(self) -> None:
@@ -179,7 +180,7 @@ class TournamentController:
     def _ask_unique_player(self, existing: list[Player], idx: int, limit: int) -> Player:
         """
         Lance la saisie d’un joueur et vérifie l’unicité de son ID.
-        
+
         Args:
             existing: liste des joueurs déjà inscrits.
             idx: numéro d’ordre pour l’affichage du formulaire.
@@ -196,11 +197,11 @@ class TournamentController:
                 TournamentView.show_player_list_header(existing)
                 continue
             return player
-        
+
     def _ask_to_start(self) -> bool:
         """
         Affiche la liste des joueurs et demande si l’on démarre le tournoi.
-        
+
         Returns:
             True si l’utilisateur répond 'Y', False sinon.
         """
@@ -260,9 +261,12 @@ class TournamentController:
         """
         t = tc.tournament
         missing = []
-        if not t.location:          missing.append("location")
-        if not t.start_date:        missing.append("start_date")
-        if not t.end_date:          missing.append("end_date")
+        if not t.location:
+            missing.append("location")
+        if not t.start_date:
+            missing.append("start_date")
+        if not t.end_date:
+            missing.append("end_date")
         if t.number_of_rounds is None:
             missing.append("number_of_rounds")
         if t.description is None:

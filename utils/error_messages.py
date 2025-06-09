@@ -1,6 +1,6 @@
-from rich.console   import Console
+from rich.console import Console
 
-from config         import MAX_DESCRIPTION_LENGTH, MIN_ROUND, MAX_ROUND, DEFAULT_NUMBER_OF_ROUND, MIN_PLAYER_AGE
+from config import MAX_DESCRIPTION_LENGTH, MIN_ROUND, MAX_ROUND, DEFAULT_NUMBER_OF_ROUND, MIN_PLAYER_AGE
 
 
 console = Console()
@@ -12,7 +12,7 @@ def invalid_name():
         "Il doit contenir [b]uniquement des lettres[/b]\n"
         "et avoir [b]au minimum 2 caractères,[/b] et au maximum [b]40 caractères.[/b]\n"
     )
-    
+
 
 def invalid_date_of_birth():
     console.print(
@@ -21,6 +21,7 @@ def invalid_date_of_birth():
         "et être au format [b]JJMMAAAA[/b]\n"
         "Exemple : [b]01012020[/b]\n"
     )
+
 
 def invalid_tournament_date():
     console.print(
@@ -68,7 +69,8 @@ def invalid_number_of_rounds():
     console.print(
         "\n[b red][ERREUR][/b red] Le nombre de rounds est [b]invalide[/b].\n"
         f"Entrez un [b yellow]nombre[/b yellow] entre [b]{MIN_ROUND}[/b] et [b]{MAX_ROUND}[/b].\n"
-        f"ou appuyez sur [b yellow]Entrée[/b yellow] pour utiliser la valeur par défaut ([b]{DEFAULT_NUMBER_OF_ROUND}[/b]).\n"
+        f"ou appuyez sur [b yellow]Entrée[/b yellow]"
+        f"pour utiliser la valeur par défaut ([b]{DEFAULT_NUMBER_OF_ROUND}[/b]).\n"
     )
 
 
@@ -82,7 +84,3 @@ def invalid_description():
 
 def invalid_yes_no():
     console.print("\nRéponse invalide, [b yellow]Y[/b yellow] ou [b yellow]N[/b yellow] attendu.")
-
-
-
-

@@ -1,6 +1,6 @@
-from config                 import DATE_STORAGE_FORMAT, MAX_NAME_LENGTH, DEFAULT_NUMBER_OF_ROUND
-from utils.date_helpers     import parse_raw_date
-from utils.error_messages   import invalid_number_of_rounds
+from config import DATE_STORAGE_FORMAT, MAX_NAME_LENGTH, DEFAULT_NUMBER_OF_ROUND
+from utils.date_helpers import parse_raw_date
+from utils.error_messages import invalid_number_of_rounds
 
 
 def format_name(last_name: str) -> str:
@@ -14,7 +14,7 @@ def format_name(last_name: str) -> str:
         last_name(str): Le nom du joueur à formater
 
     Returns:
-        None 
+        None
         ou
         str: Le nom formaté
     """
@@ -57,7 +57,7 @@ def format_id_national_chess(id_national_chess: str) -> str:
 
     Args:
         id_national_chess(str): l'ID national d'échecs à formatter
-    """    
+    """
     return id_national_chess.strip().upper()
 
 
@@ -85,10 +85,10 @@ def format_location_name(location: str) -> str:
 
     Args:
         location(str): Le nom du lieu à formater
-    
+
     Returns:
         str: Le nom du lieu formaté
-    """    
+    """
     return location.strip().upper()
 
 
@@ -97,7 +97,7 @@ def format_number_of_rounds(number_of_rounds: str) -> int:
 
     if number_of_rounds == "":
         return DEFAULT_NUMBER_OF_ROUND
-    
+
     try:
         return int(number_of_rounds)
     except ValueError:
@@ -114,7 +114,7 @@ def format_description(description: str) -> str:
 
 def format_yes_no(value: str) -> str:
     """
-    Formatte une saisie en supprimant les espaces 
+    Formatte une saisie en supprimant les espaces
     et en passant tout en majuscules.
 
     Exemple :

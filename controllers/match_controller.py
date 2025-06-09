@@ -1,14 +1,14 @@
-from typing                     import Optional
+from typing import Optional
 
-from config                     import DRAW_POINT, TOURNAMENTS_FOLDER, ENTER_FOR_CONTINUE 
-from models.match_model         import Match
-from models.round_model         import Round
-from models.tournament_model    import Tournament
-from storage.tournament_data    import save_tournament_to_json
-from utils.console              import wait_for_enter
-from utils.update_ranks         import update_ranks
-from views.match_view           import MatchView
-from views.round_view           import RoundView
+from config import DRAW_POINT, TOURNAMENTS_FOLDER, ENTER_FOR_CONTINUE
+from models.match_model import Match
+from models.round_model import Round
+from models.tournament_model import Tournament
+from storage.tournament_data import save_tournament_to_json
+from utils.console import wait_for_enter
+from utils.update_ranks import update_ranks
+from views.match_view import MatchView
+from views.round_view import RoundView
 
 
 class MatchController:

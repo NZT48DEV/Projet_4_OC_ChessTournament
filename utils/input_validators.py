@@ -1,9 +1,9 @@
 import re
 
-from config                     import MIN_PLAYER_AGE, MIN_ROUND, MAX_ROUND, MAX_DESCRIPTION_LENGTH
-from utils.date_helpers         import get_today
-from utils.error_messages       import invalid_min_player_age
-from utils.input_formatters     import parse_raw_date
+from config import MIN_PLAYER_AGE, MIN_ROUND, MAX_ROUND, MAX_DESCRIPTION_LENGTH
+from utils.date_helpers import get_today
+from utils.error_messages import invalid_min_player_age
+from utils.input_formatters import parse_raw_date
 
 
 def is_valid_name(name: str) -> bool:

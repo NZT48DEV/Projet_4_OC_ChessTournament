@@ -78,11 +78,11 @@ def load_player_from_json(folder: str, id_national: str) -> Player:
 def _player_from_dict(d: dict) -> Player:
     """Convertit un dict JSON en instance Player."""
     return Player(
-        first_name        = d["first_name"],
-        last_name         = d["last_name"],
-        date_of_birth     = d["date_of_birth"],
-        id_national_chess = d["id_national_chess"],
-        tournament_score  = d.get("tournament_score", 0.0),
-        rank              = d.get("rank", 0),
-        played_with       = d.get("played_with", []),
+        first_name=d["first_name"],
+        last_name=d["last_name"],
+        date_of_birth=d["date_of_birth"],
+        id_national_chess=d["id_national_chess"],
+        tournament_score=d.get("tournament_score", 0.0),
+        rank=d.get("rank", 0),
+        played_with=d.get("played_with", []),
     )

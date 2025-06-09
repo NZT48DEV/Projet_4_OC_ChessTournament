@@ -8,22 +8,30 @@ Un outil en ligne de commande pour créer et gérer facilement des tournois d’
 
 ```
 ChessTournament/
+├── __init__.py
 ├── config.py                 # Configuration globale (fichiers, constantes)
 ├── main.py                   # Point d’entrée de l’application
+├── requirements.txt                   
+├── README.md
+├── setup.cfg                
 ├── controllers/              # Logique métier (CRUD, appariements, gestion de tournois)
+│   ├── __init__.py
 │   ├── player_controller.py
 │   ├── tournament_controller.py
 │   ├── round_controller.py
 │   └── match_controller.py
 ├── models/                   # Définition des objets métier
+│   ├── __init__.py
 │   ├── player_model.py
 │   ├── tournament_model.py
 │   ├── round_model.py
 │   └── match_model.py
 ├── storage/                  # Lecture/écriture des données persistées
+│   ├── __init__.py
 │   ├── player_data.py
 │   └── tournament_data.py
 ├── utils/                    # Helpers et messages (I/O, validation, formattage, rangs…)
+│   ├── __init__.py
 │   ├── console.py
 │   ├── date_helpers.py
 │   ├── input_manager.py
@@ -33,15 +41,22 @@ ChessTournament/
 │   ├── error_messages.py
 │   └── info_messages.py
 ├── views/                    # Affichage et menus CLI
+│   ├── __init__.py
 │   ├── main_menu.py
 │   ├── player_view.py
 │   ├── tournament_view.py
 │   ├── round_view.py
 │   ├── match_view.py
 │   └── reports_view.py
+├── flake8_rapport/ 
+│   ├── back.svg
+│   ├── file.svg
+│   ├── index.html
+│   └── style.css  
 └── data/                     # Dossiers de stockage JSON/CSV
     ├── players/              # Fichiers individuels de joueurs
     └── tournaments/          # Fichiers individuels de tournois
+                       
 ```
 
 ---
@@ -75,7 +90,7 @@ ChessTournament/
 ## ⚙️ Configuration
 
 * **`config.py`** contient les chemins vers vos dossiers de données, le format de date, etc.
-* Vous pouvez personnaliser le nombre de rondes par défaut, le nombres de points assignés par victoire/défaite/nul, etc.
+* Vous pouvez personnaliser le nombre de rondes par défaut, le nombre de points assignés par victoire/défaite/nul, etc.
 
 ---
 
@@ -149,7 +164,7 @@ Vous verrez le **menu principal** :
 
 ---
 
-## ⚙️ Fonctionnalités principales
+## 🔑 Fonctionnalités principales
 
 Le programme gère :
 
@@ -163,7 +178,7 @@ Le programme gère :
 
 - **Sérialisation JSON** : conversion des rounds et matchs en dictionnaires prêts à être persistés avec dates et scores formatés.
 
-- **Enregistrement et persistance en temps réel** : Les données associés au tournoi (match_score/tournament_score/rank/etc.) sont mis à jour et sauvegardés après chaque action utilisateur, et peuvent être rechargés à tout moment via l’option Charger un tournoi.
+- **Enregistrement et persistance en temps réel** : Les données associées au tournoi (match_score/tournament_score/rank/etc.) sont mis à jour et sauvegardés après chaque action utilisateur, et peuvent être rechargés à tout moment via l’option Charger un tournoi.
 
 ---
 

@@ -1,11 +1,12 @@
-from typing                     import List
-from rich.console               import Console
-from rich.panel                 import Panel
-from rich.text                  import Text
+from typing import List
+from rich.console import Console
+from rich.panel import Panel
+from rich.text import Text
 
-from models.round_model         import Round
-from models.player_model        import Player
-from utils.console              import clear_screen
+from models.round_model import Round
+from models.player_model import Player
+from utils.console import clear_screen
+
 
 class RoundView:
     console = Console()
@@ -23,7 +24,7 @@ class RoundView:
         """
         RoundView.console.print("\n[b yellow]Classement intermédiaire[/b yellow]\n")
 
-        # Préparer deux listes : 
+        # Préparer deux listes :
         # - left_parts contiendra "1. Prénom NOM"
         # - id_parts contiendra "(IDN)"
         # - score_parts contiendra "1.5"
@@ -60,4 +61,3 @@ class RoundView:
         header = Text(f"{rnd.round_number}  ", style="bold white on blue")
         header.append("– En cours", style="bold white on blue")
         RoundView.console.print(Panel(header, expand=False, border_style="blue"))
-    

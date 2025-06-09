@@ -79,6 +79,32 @@ ChessTournament/
 
 ---
 
+## 🔧 Formatage et Nettoyage de Code
+
+Pour garantir la conformité aux directives PEP 8 et un code propre :
+
+1. **Installez flake8 et flake8-html :**
+
+```bash
+pip install flake8 flake8-html
+```
+
+2. **Vérifiez votre code avec flake8 (longueur max : 119) :**
+
+```bash
+flake8 --max-line-length=119 .
+```
+
+3. **Générez un rapport HTML dans un dossier flake8_rapport/ :**
+
+```bash
+flake8 --max-line-length=119 --format=html --htmldir=flake8_rapport .
+```
+
+Le rapport flake8_rapport/index.html doit s’ouvrir sans aucune erreur pour valider la conformité PEP 8.
+
+---
+
 ## ▶️ Utilisation
 
 Lancez l’application depuis le terminal :

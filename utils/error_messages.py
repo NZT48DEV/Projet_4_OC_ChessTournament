@@ -1,4 +1,5 @@
 from rich.console   import Console
+
 from config         import MAX_DESCRIPTION_LENGTH, MIN_ROUND, MAX_ROUND
 
 
@@ -80,15 +81,8 @@ def invalid_description():
 
 
 def invalid_yes_no():
-    """
-    Message d’erreur à afficher quand on attend uniquement "Y" ou "N".
-    """
     console.print("\nRéponse invalide, [b yellow]Y[/b yellow] ou [b yellow]N[/b yellow] attendu.")
 
 
-def player_already_in_tournament_text(id_national: str) -> str:
-    return (
-        f"\n[b red][ERREUR][/b red] [b]Le joueur avec l’ID {id_national} est déjà inscrit dans ce tournoi.[/b]\n"
-        "Veuillez en choisir un autre.\n"
-    )
+
 

@@ -1,11 +1,16 @@
 import os
 from storage.player_data     import load_players_from_json, load_player_from_json
 from storage.tournament_data import load_tournament_from_json
-from config                   import PLAYERS_FOLDER, TOURNAMENTS_FOLDER
+from config                   import PLAYERS_FOLDER, TOURNAMENTS_FOLDER, ENTER_FOR_RAPPORT
 from views.tournament_view    import TournamentView
 from controllers.tournament_controller import TournamentController
-from utils.console            import clear_screen, wait_for_enter_rapports
+from utils.console            import clear_screen, wait_for_enter
+from utils.info_messages    import prompt_file_to_load
 from models.player_model      import Player
+from rich.console   import Console
+
+
+console = Console()
 
 
 class ReportsView:
@@ -15,7 +20,7 @@ class ReportsView:
         players = load_players_from_json(PLAYERS_FOLDER)
         TournamentView.show_player_list_header(players)
         print()
-        wait_for_enter_rapports()
+        wait_for_enter(ENTER_FOR_RAPPORT)
         clear_screen()
 
     @staticmethod
@@ -34,7 +39,7 @@ class ReportsView:
                 for idx, filename in enumerate(files, start=1):
                     print(f"{idx}. {filename}")
         print()
-        wait_for_enter_rapports()
+        wait_for_enter(ENTER_FOR_RAPPORT)
         clear_screen()
 
     @staticmethod
@@ -44,15 +49,17 @@ class ReportsView:
         Renvoie le chemin complet du fichier sélectionné, ou vide si l'utilisateur annule.
         """
         if not os.path.isdir(TOURNAMENTS_FOLDER):
+            clear_screen()
             print(f"Aucun dossier '{TOURNAMENTS_FOLDER}' trouvé.")
-            wait_for_enter_rapports()
+            wait_for_enter(ENTER_FOR_RAPPORT)
             clear_screen()
             return ""
 
         files = sorted(f for f in os.listdir(TOURNAMENTS_FOLDER) if f.endswith('.json'))
         if not files:
+            clear_screen()
             print(f"Aucun tournoi enregistré dans {TOURNAMENTS_FOLDER}.")
-            wait_for_enter_rapports()
+            wait_for_enter(ENTER_FOR_RAPPORT)
             clear_screen()
             return ""
 
@@ -60,7 +67,7 @@ class ReportsView:
         print("\nFichiers de tournois disponibles :\n")
         for filename in files:
             print(f"  • {filename}")
-        print("\nEntrez le nom exact du fichier (ou laissez vide pour annuler).")
+        console.print(prompt_file_to_load())
         choice = input("Nom du fichier à charger → ").strip()
         if not choice:
             clear_screen()
@@ -68,7 +75,7 @@ class ReportsView:
         if choice not in files:
             clear_screen()
             print(f"❌ Le fichier « {choice} » n'existe pas.")
-            wait_for_enter_rapports()
+            wait_for_enter(ENTER_FOR_RAPPORT)
             clear_screen()
             return ""
         return os.path.join(TOURNAMENTS_FOLDER, choice)
@@ -92,7 +99,7 @@ class ReportsView:
 
         clear_screen()
         print("\n" + "=" * 40)
-        print("🏆   INFORMATIONS DU TOURNOI   🏆")
+        print("🏆       INFORMATIONS DU TOURNOI      🏆")
         print("=" * 40 + "\n")
 
         # Nom du tournoi (toujours présent dans le JSON)
@@ -131,7 +138,7 @@ class ReportsView:
             print(f"Description     : {desc}")
 
         print()
-        wait_for_enter_rapports()
+        wait_for_enter(ENTER_FOR_RAPPORT)
         clear_screen()
 
 
@@ -151,7 +158,7 @@ class ReportsView:
             clear_screen()
             print("\nAucun joueur inscrit dans ce tournoi.")
             print()
-            wait_for_enter_rapports()
+            wait_for_enter(ENTER_FOR_RAPPORT)
             clear_screen()
             return
 
@@ -188,7 +195,7 @@ class ReportsView:
             for idn in missing_ids:
                 print(f"Le joueur avec l’IDN {idn} n’existe pas.")
         print()
-        wait_for_enter_rapports()
+        wait_for_enter(ENTER_FOR_RAPPORT)
         clear_screen()
 
 
@@ -215,5 +222,5 @@ class ReportsView:
         TournamentView.show_tournament_summary(tournoi)
 
         print()
-        wait_for_enter_rapports()
+        wait_for_enter(ENTER_FOR_RAPPORT)
         clear_screen()

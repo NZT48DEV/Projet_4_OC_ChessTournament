@@ -1,12 +1,12 @@
+from config                 import PLAYERS_FOLDER, ENTER_FOR_CONTINUE
 from models.player_model    import Player
-from views.player_view      import PlayerView
-from storage.player_data    import save_player_to_json, load_player_from_json
-from config                 import PLAYERS_FOLDER
+from storage.player_data    import load_player_from_json, save_player_to_json 
 from utils.input_manager    import get_valid_input
 from utils.input_formatters import format_yes_no
 from utils.input_validators import is_valid_yes_no
 from utils.error_messages   import invalid_yes_no
-from utils.console          import wait_for_enter_continue
+from utils.console          import wait_for_enter
+from views.player_view      import PlayerView
 
 
 class PlayerController:
@@ -92,12 +92,13 @@ class PlayerController:
 
             if missing:
                 PlayerView.display_player_incomplete(player)
-                wait_for_enter_continue()
+                wait_for_enter(ENTER_FOR_CONTINUE)
                 PlayerController._complete_fields(player, missing)
                 PlayerView.display_player_updated(player)
 
             elif prompt_modify:
                 PlayerView.display_player_already_exist(player)
+                wait_for_enter(ENTER_FOR_CONTINUE)
                 choice = get_valid_input(
                     prompt="Voulez-vous modifier ce joueur (Y/N) ? ",
                     formatter=format_yes_no,
@@ -110,7 +111,7 @@ class PlayerController:
                         player, ["first_name", "last_name", "date_of_birth"]
                     )
                     PlayerView.display_player_updated(player)
-
+            
             return player
 
         except FileNotFoundError:
@@ -132,6 +133,7 @@ class PlayerController:
                 player, ["first_name", "last_name", "date_of_birth"]
             )
             PlayerView.display_player_added(player)
+            wait_for_enter(ENTER_FOR_CONTINUE)
             return player
 
     @staticmethod

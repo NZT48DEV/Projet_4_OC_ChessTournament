@@ -1,4 +1,6 @@
-from typing import List, Dict, Any
+from __future__ import annotations
+from typing     import List, Dict, Any
+
 
 class Player:
     """
@@ -49,7 +51,7 @@ class Player:
         }
 
     @classmethod
-    def from_dict(cls, data: Dict[str, Any]) -> 'Player':
+    def from_dict(cls, data: Dict[str, Any]) -> Player:
         """
         Reconstruit une instance Player à partir d'un dict désérialisé.
         """

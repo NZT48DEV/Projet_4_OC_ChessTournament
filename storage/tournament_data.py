@@ -14,6 +14,7 @@ def save_tournament_to_json(tournament_data, folder, filename):
 
     return True
 
+
 def load_tournament_from_json(filepath: str) -> dict:
     """
     Lit et retourne le contenu d'un fichier JSON de tournoi.

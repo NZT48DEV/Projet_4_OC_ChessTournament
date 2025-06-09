@@ -1,5 +1,3 @@
-
-
 def get_valid_input(
         prompt: str,
         formatter: callable,

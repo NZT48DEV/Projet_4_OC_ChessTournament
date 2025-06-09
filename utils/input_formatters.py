@@ -1,5 +1,5 @@
+from config                 import DATE_STORAGE_FORMAT, MAX_NAME_LENGTH
 from utils.date_helpers     import parse_raw_date
-from config                 import MAX_NAME_LENGTH, DATE_STORAGE_FORMAT, MAX_DESCRIPTION_LENGTH
 from utils.error_messages   import invalid_number_of_rounds
 
 
@@ -22,6 +22,7 @@ def format_name(last_name: str) -> str:
     if len(last_name) > MAX_NAME_LENGTH:
         return None
     return last_name
+
 
 def format_first_name(first_name: str) -> str:
 

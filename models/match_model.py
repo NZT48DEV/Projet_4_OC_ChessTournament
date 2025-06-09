@@ -1,5 +1,6 @@
 import random
 from typing                 import Tuple, Optional, Dict, Any
+
 from config                 import DRAW_POINT, WIN_POINT, LOSE_POINT, BYE_POINT
 from models.player_model    import Player
 

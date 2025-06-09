@@ -1,13 +1,13 @@
-from storage.tournament_data import save_tournament_to_json
-from config import TOURNAMENTS_FOLDER
-from models.round_model import Round
-from views.round_view import RoundView
-from controllers.match_controller import MatchController
-from models.tournament_model import Tournament
-from models.player_model import Player
-from utils.console import clear_screen, wait_for_enter_continue
-from utils.update_ranks import update_ranks
-from views.tournament_view import TournamentView
+from config                         import TOURNAMENTS_FOLDER, ENTER_FOR_MAIN_MENU
+from controllers.match_controller   import MatchController
+from storage.tournament_data        import save_tournament_to_json
+from models.match_model             import Match
+from models.player_model            import Player
+from models.round_model             import Round
+from models.tournament_model        import Tournament
+from utils.console                  import wait_for_enter
+from views.round_view               import RoundView
+from views.tournament_view          import TournamentView
 
 
 class RoundController:
@@ -25,21 +25,25 @@ class RoundController:
         self.rounds: list[Round] = tournament.list_of_rounds or []
 
     def make_round(self, index: int) -> Round:
+        """
+        Crée un Round, démarre l'horodatage et génère les appariements.
+        Initialise les scores et snapshots des matchs.
+        """
         rnd = Round(f"Round {index}")
         rnd.start_round()
         rnd.generate_pairings(self.players)
         for match in rnd.matches:
             match.assign_color()
-            if match.player_2 is not None:
-                match.match_score_1 = None
+            # initialisation des scores
+            match.match_score_1 = None
+            if match.player_2:
                 match.match_score_2 = None
                 match.winner = None
             else:
-                match.match_score_1 = None
                 match.winner = None
-            p1 = getattr(match, 'player_1', None)
-            p2 = getattr(match, 'player_2', None)
-            if p1 and p2:
+            # snapshot initial
+            if match.player_2:
+                p1, p2 = match.player_1, match.player_2
                 match._snap1 = {
                     "id_national_chess": p1.id_national_chess,
                     "match_score": None,
@@ -59,103 +63,90 @@ class RoundController:
         return rnd
 
     def run(self) -> None:
+        """
+        Démarre la séquence de rounds depuis le premier.
+        """
         if len(self.players) < 2:
             RoundView.show_error("Pas assez de joueurs pour démarrer le tournoi.")
             return
         self.start_from_round(1)
 
     def start_from_round(self, starting_round: int) -> None:
+        """
+        Exécute tous les rounds du tournoi à partir du numéro indiqué.
+        """
         if len(self.players) < 2:
             RoundView.show_error("Pas assez de joueurs pour démarrer le tournoi.")
             return
 
         for rnd_num in range(starting_round, self.num_rounds + 1):
-            for player in self.players:
-                player.match_score = None
-
-            if rnd_num <= len(self.rounds):
-                rnd = self.rounds[rnd_num - 1]
-            else:
-                rnd = self.make_round(rnd_num)
-                self.rounds.append(rnd)
-                self.tournament.list_of_rounds = self.rounds
-                self.tournament.actual_round = rnd_num
-                save_tournament_to_json(
-                    self.tournament.get_serialized_tournament(),
-                    TOURNAMENTS_FOLDER,
-                    self.filename
-                )
+            rnd = self._get_or_create_round(rnd_num)
 
             for match in rnd.matches:
-                if match.player_2 is None and match.match_score_1 is not None:
+                if self._is_match_completed(match):
                     continue
-                if (match.player_2 is not None
-                        and match.match_score_1 is not None
-                        and match.match_score_2 is not None):
-                    continue
+                self._execute_match(match, rnd, rnd_num)
 
-                # classement live avant le match
-                update_ranks(self.tournament)
-                self._refresh_match_snapshots()
-                RoundView.show_start_round(rnd)
+            self._finalize_round(rnd)
 
-                mc = MatchController(match, self.tournament, self.filename)
-                try:
-                    mc.run()
-                finally:
-                    # quoi qu'il arrive, on garantit : 
-                    # snapshot, mise à jour des ranks, save, et clôture si nécessaire
-                    match.snapshot()
-                    update_ranks(self.tournament)
-                    self._refresh_match_snapshots()
-                    self._save_progress(rnd_num)
-
-                    all_played = all(
-                        (m.match_score_1 is not None
-                         and (m.player_2 is None or m.match_score_2 is not None))
-                        for m in rnd.matches
-                    )
-                    if all_played and rnd.end_time is None:
-                        rnd.end_round()
-                        self._save_progress(rnd_num)
-
-            # une fois tous les matchs parcourus, round déjà close si terminé
-            RoundView.show_round_report(rnd)
-            RoundView.show_intermediate_ranking(self.players)
-            print()
-            wait_for_enter_continue()
-
-        clear_screen()
-        print("Tournoi terminé. Voici le résumé final :\n")
         TournamentView.show_tournament_summary(self.tournament)
+        wait_for_enter(ENTER_FOR_MAIN_MENU)
 
-    def _refresh_match_snapshots(self) -> None:
-        if not self.rounds:
-            return
-        current_round = self.rounds[-1]
-        for match in current_round.matches:
-            if hasattr(match, '_snap1') and match._snap1:
-                pid1 = match._snap1['id_national_chess']
-                new_rank1 = next(
-                    (p.rank for p in self.players if p.id_national_chess == pid1),
-                    None
-                )
-                if new_rank1 is not None:
-                    match._snap1['rank'] = new_rank1
-            if hasattr(match, '_snap2') and match._snap2:
-                pid2 = match._snap2['id_national_chess']
-                new_rank2 = next(
-                    (p.rank for p in self.players if p.id_national_chess == pid2),
-                    None
-                )
-                if new_rank2 is not None:
-                    match._snap2['rank'] = new_rank2
+    def _get_or_create_round(self, rnd_num: int) -> Round:
+        """Récupère un Round existant ou en crée un nouveau."""
+        if rnd_num <= len(self.rounds):
+            return self.rounds[rnd_num - 1]
+        rnd = self.make_round(rnd_num)
+        self.rounds.append(rnd)
+        self.tournament.list_of_rounds = self.rounds
+        self.tournament.actual_round = rnd_num
+        save_tournament_to_json(
+            self.tournament.get_serialized_tournament(),
+            TOURNAMENTS_FOLDER, self.filename
+        )
+        return rnd
+
+    def _is_match_completed(self, match: Match) -> bool:
+        """Retourne True si le match a déjà ses scores renseignés."""
+        if match.player_2 is None:
+            return match.match_score_1 is not None
+        return (match.match_score_1 is not None
+                and match.match_score_2 is not None)
+
+    def _execute_match(self, match: Match, rnd: Round, rnd_num: int) -> None:
+        """
+        Lance un match et garantit persistance, snapshot et clôture de round si nécessaire.
+        """
+        mc = MatchController(
+            match=match,
+            current_round=rnd, 
+            tournament=self.tournament, 
+            filename=self.filename)
+        try:
+            mc.run()
+        finally:
+            if self._is_round_finished(rnd):
+                rnd.end_round()
+                self._save_progress(rnd_num)
+
+    def _finalize_round(self, rnd: Round) -> None:
+        """Affiche le rapport et le classement intermédiaire pour le round achevé."""
+        RoundView.show_round_report(rnd)
+        RoundView.show_intermediate_ranking(self.players)
+
+    def _is_round_finished(self, rnd: Round) -> bool:
+        """Teste si tous les matchs du round ont leurs scores renseignés."""
+        return all(
+            (m.match_score_1 is not None
+             and (m.player_2 is None or m.match_score_2 is not None))
+            for m in rnd.matches
+        )
 
     def _save_progress(self, round_number: int) -> None:
+        """Sauvegarde l'état actuel du tournoi dans le fichier JSON."""
         self.tournament.actual_round = round_number
         self.tournament.list_of_rounds = self.rounds
         save_tournament_to_json(
             self.tournament.get_serialized_tournament(),
-            TOURNAMENTS_FOLDER,
-            self.filename
+            TOURNAMENTS_FOLDER, self.filename
         )

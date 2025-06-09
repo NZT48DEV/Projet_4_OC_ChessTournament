@@ -1,5 +1,6 @@
 import json
 import os
+
 from models.player_model import Player
 
 
@@ -52,6 +53,7 @@ def load_players_from_json(folder: str) -> list[Player]:
 
     return players
 
+
 def load_player_from_json(folder: str, id_national: str) -> Player:
     """
     Tente de charger le joueur dont l’ID national vaut `id_national`.
@@ -71,6 +73,7 @@ def load_player_from_json(folder: str, id_national: str) -> Player:
 
     # Création de l'objet Player à partir du dict
     return Player.from_dict(data)
+
 
 def _player_from_dict(d: dict) -> Player:
     """Convertit un dict JSON en instance Player."""

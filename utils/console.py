@@ -1,7 +1,9 @@
 import os
 from rich.console import Console
 
+
 console = Console()
+
 
 def clear_screen():
     """
@@ -12,20 +14,8 @@ def clear_screen():
     os.system('cls' if os.name == 'nt' else 'clear')
 
 
-def wait_for_enter_continue() -> None:
+def wait_for_enter(choice) -> None:
     """
     Affiche un message et met en pause jusqu’à ce que l’utilisateur appuie sur Entrée.
     """
-    console.input("Appuyez sur [b yellow][i]Entrée[/i][/b yellow] pour continuer…")
-
-def wait_for_enter_menu() -> None:
-    """
-    Affiche un message et met en pause jusqu’à ce que l’utilisateur appuie sur Entrée.
-    """
-    console.input("Appuyez sur [b yellow][i]Entrée[/i][/b yellow] pour revenir au menu principal.")
-
-def wait_for_enter_rapports() -> None:
-    """
-    Affiche un message et met en pause jusqu’à ce que l’utilisateur appuie sur Entrée.
-    """
-    console.input("Appuyez sur [b yellow][i]Entrée[/i][/b yellow] pour revenir au menu des rapports.")
+    console.input(f"Appuyez sur [b yellow][i]Entrée[/i][/b yellow] pour {choice}")

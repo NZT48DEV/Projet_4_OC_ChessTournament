@@ -1,5 +1,6 @@
 from models.tournament_model import Tournament
 
+
 def update_ranks(tournament: Tournament) -> None:
     """
     Recalcule et assigne les rangs (dense ranking) de tous les joueurs

@@ -24,21 +24,21 @@ from utils.error_messages import (
     invalid_number_of_rounds,
     invalid_description,
     invalid_id_national_chess,
-    player_already_in_tournament_text
 )
 
 from utils.info_messages import (
     tournament_incomplete_text,
-    tournament_info_text
+    tournament_info_text,
+    player_already_in_tournament_text
 )
 
 from utils.input_manager            import get_valid_input
 from utils.console                  import clear_screen
 from controllers.player_controller  import PlayerController
-from config                         import PLAYERS_FOLDER, PLAYERS_FILENAME
+from config                         import PLAYERS_FOLDER, PLAYERS_FILENAME, ENTER_FOR_CONTINUE
 from views.player_view              import PlayerView
 from models.tournament_model        import Tournament
-from utils.console                  import wait_for_enter_continue
+from utils.console                  import wait_for_enter
 from rich.console                   import Console
 from models.player_model            import Player
 from rich.console                   import Console
@@ -145,14 +145,14 @@ class TournamentView:
         """
         clear_screen()
         print("\n" + "=" * 40)
-        print("👥         LISTE DES JOUEURS         👥")
+        print("👥          LISTE DES JOUEURS         👥")
         print("=" * 40 + "\n")
 
         if list_of_players:
             PlayerView.list_players(list_of_players)
             print()  # Ligne vide pour aérer
         else:
-            print("[Aucun joueur inscrit pour l’instant]\n")
+            print("[Aucun joueur inscrit]\n")
 
 
     @staticmethod
@@ -196,7 +196,7 @@ class TournamentView:
         if not os.path.exists(filepath):
             PlayerView.display_nonexistent_player(id_input)
             print()
-            wait_for_enter_continue()
+            wait_for_enter(ENTER_FOR_CONTINUE)
 
         # 4. Charger/créer/completer le profil via le controller
         player = PlayerController.create_player_with_id(id_input)
@@ -226,12 +226,15 @@ class TournamentView:
 
         - `tournament`: instance de Tournament ayant les listes list_of_players et list_of_rounds complètes.
         """
+        clear_screen()
         console = Console()
 
         # 0) Construire un mapping IDN → Player
         players_map: dict[str, Player] = {
             p.id_national_chess: p for p in tournament.list_of_players
         }
+
+        print("Tournoi terminé. Récapitulatif final :\n")
 
         # 1) En-tête général
         console.print()
@@ -346,7 +349,7 @@ class TournamentView:
                     sc1 = p1_snap.get("match_score", None)
                     sc2 = p2_snap.get("match_score", None)
 
-                    # Afficher toujours la décimale (0.0, 0.5, 1.0) ou “[En cours]”
+                    # Afficher toujours la décimale ou “[En cours]”
                     def fmt_score(x):
                         return f"{x:.1f}" if x is not None else "[Match non commencé]"
 
@@ -368,7 +371,7 @@ class TournamentView:
             if end == "[En cours]":
                 console.print(
                     f"[italic yellow]\nLe tournoi est en cours : "
-                    f"{tournament.actual_round - 1} / {tournament.number_of_rounds} rounds joués.\n"
+                    f"{tournament.actual_round - 1} / {tournament.number_of_rounds} round(s) joué(s).\n"
                     f"Le round {tournament.actual_round} est en cours...[/italic yellow]"
                 )
 

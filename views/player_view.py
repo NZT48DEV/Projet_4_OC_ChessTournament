@@ -1,3 +1,6 @@
+from rich.console               import Console
+
+from models.player_model        import Player
 from utils.input_formatters     import (
                                         format_first_name,
                                         format_name,
@@ -13,7 +16,6 @@ from utils.error_messages       import (
                                         invalid_name,
                                         invalid_date_of_birth,
                                         invalid_id_national_chess,
-                                        player_already_in_tournament_text
                                     )
 from utils.info_messages        import (
                                         player_added_text,
@@ -22,13 +24,12 @@ from utils.info_messages        import (
                                         player_incomplete_text,
                                         player_info_text,
                                         player_nonexistent_text,
-                                        player_added_to_chesstournament_text
+                                        player_added_to_chesstournament_text,
+                                        player_already_in_tournament_text
                                     )
-from utils.input_manager        import get_valid_input
 from utils.console              import clear_screen
-from models.player_model        import Player
-from rich.console               import Console
-from utils.console              import wait_for_enter_continue
+from utils.input_manager        import get_valid_input
+
 
 
 console = Console()
@@ -130,7 +131,7 @@ class PlayerView:
         clear_screen()
         console.print(player_already_exist_text())
         console.print(player_info_text(player))
-        wait_for_enter_continue()
+        
 
     @staticmethod
     def display_player_incomplete(player: Player) -> None:

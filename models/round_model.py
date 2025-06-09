@@ -1,223 +1,194 @@
 import datetime
 import random
-from typing                 import List, Set, Dict
+from typing                 import Dict, List, Set
+
 from models.match_model     import Match
 from models.player_model    import Player
 
+
 class Round:
+    """
+    Représente un tour (round) d'un tournoi d'échecs.
+    Gère la génération des appariements selon la méthode suisse,
+    l'enregistrement des horaires et la sérialisation.
+    """
     def __init__(self, round_number: str) -> None:
-        self.round_number = round_number
+        """
+        Initialise un Round.
+
+        Args:
+            round_number: Identifiant textuel du tour (ex: "Round 1").
+        """
+        self.round_number: str = round_number
         self.matches: List[Match] = []
-        self.start_time: datetime.datetime = None
-        self.end_time: datetime.datetime = None
+        self.start_time: datetime.datetime | None = None
+        self.end_time: datetime.datetime | None = None
 
     def start_round(self) -> None:
-        """Enregistre l'heure de début du tour."""
+        """
+        Définit l'heure de début du round à maintenant.
+        """
         self.start_time = datetime.datetime.now()
 
     def end_round(self) -> None:
-        """Enregistre l'heure de fin du tour."""
+        """
+        Définit l'heure de fin du round à maintenant.
+        """
         self.end_time = datetime.datetime.now()
 
     def add_match(self, match: Match) -> None:
-        """Ajoute un objet Match au round."""
+        """
+        Ajoute un match au round.
+
+        Args:
+            match: Instance de Match à ajouter.
+        """
         self.matches.append(match)
 
     def generate_pairings(self, players: List[Player]) -> None:
         """
-        Génère les appariements pour le round selon la logique suisse, mais s'assure
-        que le match de repos (bye) soit toujours créé en premier lorsqu'il y a un nombre impair de joueurs :
-        
-        1) Trier les joueurs par tournament_score (ex-æquos mélangés).
-        2) Si nombre impair → choisir le bye (le plus faible n’ayant jamais eu de bye), le créer en premier.
-        3) Tenter d’apparier tous les joueurs restants sans rematch.
-        4) Si, parmi les restants, il y a encore un joueur non apparié (cas extrême), forcer un rematch.
+        Génère les appariements pour ce round selon la logique suisse :
+          1) Trie par score, mélange par ex-æquo.
+          2) Si nombre impair, crée un bye pour un joueur admissible.
+          3) Appariements sans rematch.
+          4) En dernier recours, force rematch.
+
+        Args:
+            players: Liste des joueurs participants.
         """
-        # 1) Préparation du « pool » trié, mélange dans chaque groupe de score égal
-        sorted_players = sorted(players, key=lambda p: p.tournament_score, reverse=True)
-        pool: List[Player] = []
+        pool = self._build_shuffled_pool(players)
+        if len(pool) % 2 == 1:
+            self._create_bye(players, pool)
+        self._pair_players(pool)
+
+    def _build_shuffled_pool(self, players: List[Player]) -> List[Player]:
+        """
+        Trie les joueurs par score descendant, mélange les ex-æquo.
+        """
         groups: Dict[float, List[Player]] = {}
-        for p in sorted_players:
+        for p in players:
             groups.setdefault(p.tournament_score, []).append(p)
-        for grp in groups.values():
+        pool: List[Player] = []
+        for score, grp in sorted(groups.items(), key=lambda x: -x[0]):
             random.shuffle(grp)
             pool.extend(grp)
+        return pool
 
-        # 2) Gestion du bye **en tout premier** si le nombre de joueurs est impair
-        #    (on retire le joueur choisi pour le bye de la liste pool avant tout pairing).
-        if len(pool) % 2 == 1:
-            # 2.a – Trouver parmi les unpaired (tous ici) les candidats n’ayant jamais eu de bye
-            candidates = [p for p in pool if "tour de repos" not in p.played_with]
-            # Si aucun candidat n’est disponible (tous ont déjà eu un bye), on prend alors
-            # parmi l’ensemble le joueur le moins fort (score faible) pour faire le bye.
-            if not candidates:
-                candidates = pool
-            bye_player = min(candidates, key=lambda p: p.tournament_score)
+    def _create_bye(self, players: List[Player], pool: List[Player]) -> None:
+        """
+        Crée et enregistre un match de repos pour un joueur admissible.
+        Met à jour le classement dense et prend un snapshot.
+        """
+        candidates = [p for p in pool if "tour de repos" not in p.played_with]
+        if not candidates:
+            candidates = pool
+        bye_player = min(candidates, key=lambda p: p.tournament_score)
+        bye_player.played_with.append("tour de repos")
+        bye_match = Match(f"{self.round_number} - Repos", (bye_player, None))
+        # mise à jour des ranks dense
+        ranked = sorted(players, key=lambda p: p.tournament_score, reverse=True)
+        prev_score = None
+        prev_rank = 0
+        dense_rank = 1
+        for p in ranked:
+            if prev_score is None or p.tournament_score < prev_score:
+                prev_score = p.tournament_score
+                prev_rank = dense_rank
+                dense_rank += 1
+            p.rank = prev_rank
+        # snapshot et ajout
+        bye_match.snapshot()
+        self.add_match(bye_match)
+        pool.remove(bye_player)
 
-            # 2.b – On marque le bye sur le joueur (ajout dans played_with)
-            #       (on ne fait pas +=0.5 ici, car Match.apply_result(0) s’en chargera).
-            bye_player.played_with.append("tour de repos")
-
-            # 2.c – On crée le match de repos **en premier** et on l’ajoute
-            #       à la liste self.matches AVANT tout autre pairing.
-            bye_match = Match(f"{self.round_number} - Repos", (bye_player, None))
-
-            # On met déjà à jour les classements (dense rank) immédiatement après le bye
-            ranked_players = sorted(players, key=lambda p: p.tournament_score, reverse=True)
-            prev_score = None
-            prev_rank = 0
-            dense_rank = 1
-            for p in ranked_players:
-                if prev_score is None or p.tournament_score < prev_score:
-                    p.rank = dense_rank
-                    prev_score = p.tournament_score
-                    prev_rank = dense_rank
-                    dense_rank += 1
-                else:
-                    p.rank = prev_rank
-
-            # On prend un snapshot pour le match de repos avant de le stocker
-            bye_match.snapshot()
-            self.add_match(bye_match)
-
-            # 2.d – On retire ensuite ce bye_player de la liste « pool »
-            pool.remove(bye_player)
-
-        # 3) Appariements des joueurs restants (première passe sans rematch)
-        paired: Set[Player] = set()    # ensemble des joueurs déjà appariés
-        unpaired: List[Player] = []    # liste des joueurs qui n’ont pas trouvé d’adversaire sans rematch
-
-        for player_1 in pool:
-            if player_1 in paired:
+    def _pair_players(self, pool: List[Player]) -> None:
+        """
+        Apparie les joueurs restants en deux passes : sans rematch puis en forçant rematch.
+        """
+        paired: Set[Player] = set()
+        unpaired: List[Player] = []
+        # Passe 1 : sans rematch
+        for p1 in pool:
+            if p1 in paired:
                 continue
-            found = False
-            for player_2 in pool:
-                if player_2 in paired or player_2 is player_1:
+            for p2 in pool:
+                if p2 in paired or p2 is p1:
                     continue
-                # Si ce candidat n’a **jamais** été apparié contre player_1
-                if player_2.id_national_chess in player_1.played_with:
+                if p2.id_national_chess in p1.played_with:
                     continue
-                # On appaire player_1 & player_2
-                paired.update({player_1, player_2})
-                player_1.played_with.append(player_2.id_national_chess)
-                player_2.played_with.append(player_1.id_national_chess)
-                self.add_match(Match(f"{self.round_number} - Match", (player_1, player_2)))
-                found = True
+                # appariement
+                paired.update({p1, p2})
+                p1.played_with.append(p2.id_national_chess)
+                p2.played_with.append(p1.id_national_chess)
+                self.add_match(Match(f"{self.round_number} - Match", (p1, p2)))
                 break
-            if not found:
-                # Aucun adversaire sans rematch trouvé, on garde player_1 pour la passe 2
-                unpaired.append(player_1)
-
-        # 4) Deuxième passe : appariements restants (force rematch si nécessaire)
+            else:
+                unpaired.append(p1)
+        # Passe 2 : forcer rematch
         while len(unpaired) >= 2:
-            player_1 = unpaired.pop(0)
-            # On cherche d’abord un adversaire pour lequel il n’y a pas encore eu de rematch
-            player_2 = None
-            for candidate in unpaired:
-                if candidate.id_national_chess not in player_1.played_with:
-                    player_2 = candidate
-                    break
-            # Si on n’en trouve pas, on force un rematch avec le premier qui restait
-            if player_2 is None:
-                player_2 = unpaired[0]
-            unpaired.remove(player_2)
-
-            # Enregistrer le rematch, même si c’est contre un adversaire déjà rencontré
-            paired.update({player_1, player_2})
-            player_1.played_with.append(player_2.id_national_chess)
-            player_2.played_with.append(player_1.id_national_chess)
-
-            name = f"{self.round_number} - Match"
-            match = Match(name, (player_1, player_2))
-            self.add_match(match)
-
+            p1 = unpaired.pop(0)
+            # trouve un partenaire non apparié idéal
+            p2 = next((c for c in unpaired if c.id_national_chess not in p1.played_with), None)
+            if p2 is None:
+                p2 = unpaired[0]
+            unpaired.remove(p2)
+            paired.update({p1, p2})
+            p1.played_with.append(p2.id_national_chess)
+            p2.played_with.append(p1.id_national_chess)
+            self.add_match(Match(f"{self.round_number} - Match", (p1, p2)))
 
     def get_round_report(self) -> str:
         """
-        Retourne un rapport textuel brut des matchs, avec colonnes alignées
-        et une ligne vide entre chaque match. Cette version fait en sorte que
-        le match de repos (bye) soit toujours affiché en premier.
+        Retourne un rapport textuel aligné des matchs de ce round,
+        plaçant les byes en premier et espaçant par des lignes vides.
         """
-        # 1) Tri des matches pour que les byes arrivent en tête
-        matches_ordonnes = sorted(
-            self.matches,
-            key=lambda m: (m.player_2 is not None)
-        )
-
-        # 2) Constituer une liste de « groupes », un groupe par match
-        #    (soit un tuple pour le bye, soit deux tuples pour un match classique)
+        # tri : byes d'abord
+        ordered = sorted(self.matches, key=lambda m: m.player_2 is not None)
         groups: List[List[tuple]] = []
-        for match in matches_ordonnes:
-            if match.player_2 is None:
-                # Cas "bye" : un seul tuple
-                p1 = match.player_1
-                name1  = f"{p1.first_name} {p1.last_name}"
-                id1    = f"[{p1.id_national_chess}]"
-                color1 = "(Repos)"
-                score1 = f"{match.match_score_1:.1f}"
-                groups.append([(name1, id1, color1, score1)])
+        for m in ordered:
+            if m.player_2 is None:
+                p = m.player_1
+                groups.append([(f"{p.first_name} {p.last_name}", f"[{p.id_national_chess}]", "(Repos)", f"{m.match_score_1:.1f}")])
             else:
-                # Match classique : deux tuples (joueur 1 et joueur 2)
-                p1 = match.player_1
-                p2 = match.player_2
-
-                name1  = f"{p1.first_name} {p1.last_name}"
-                id1    = f"[{p1.id_national_chess}]"
-                color1 = f"({match.color_player_1})"
-                sc1    = match.match_score_1 if match.match_score_1 is not None else 0.0
-                score1 = f"{sc1:.1f}"
-
-                name2  = f"{p2.first_name} {p2.last_name}"
-                id2    = f"[{p2.id_national_chess}]"
-                color2 = f"({match.color_player_2})"
-                sc2    = match.match_score_2 if match.match_score_2 is not None else 0.0
-                score2 = f"{sc2:.1f}"
-
+                p1, p2 = m.player_1, m.player_2
                 groups.append([
-                    (name1, id1, color1, score1),
-                    (name2, id2, color2, score2),
+                    (f"{p1.first_name} {p1.last_name}", f"[{p1.id_national_chess}]", f"({m.color_player_1})", f"{(m.match_score_1 or 0.0):.1f}"),
+                    (f"{p2.first_name} {p2.last_name}", f"[{p2.id_national_chess}]", f"({m.color_player_2})", f"{(m.match_score_2 or 0.0):.1f}")
                 ])
-
-        # 3) Calcul des largeurs maximales pour aligner les colonnes
-        all_entries = [entry for group in groups for entry in group]
-        max_name  = max(len(name)  for name, *_ in all_entries) if all_entries else 0
-        max_idn   = max(len(idn)   for _, idn, *_ in all_entries) if all_entries else 0
-        max_color = max(len(color) for *_, color, _ in all_entries) if all_entries else 0
-
-        # 4) Construction des lignes finalisées,
-        #    en insérant une ligne vide entre chaque match (sauf après le dernier).
-        lines: List[str] = []
-        lines.append(f"\n{self.round_number} – Matchs :\n")
-        for idx, group in enumerate(groups):
-            for name, idn, color, score in group:
-                pad_name  = " " * (max_name  - len(name))
-                pad_idn   = " " * (max_idn   - len(idn))
-                pad_color = " " * (max_color - len(color))
-                lines.append(f"{name}{pad_name} {idn}{pad_idn} {color}{pad_color} : {score}\n")
-            # Ajoute une ligne vide entre deux groupes (deux matchs)
-            if idx < len(groups) - 1:
+        # calcul des largeurs
+        all_entries = [e for grp in groups for e in grp]
+        max_name  = max((len(name) for name, *_ in all_entries), default=0)
+        max_id    = max((len(idn)   for _, idn, *_ in all_entries), default=0)
+        max_color = max((len(color) for *_, color, _ in all_entries), default=0)
+        # constitution des lignes
+        lines = [f"\n{self.round_number} – Matchs :\n"]
+        for i, grp in enumerate(groups):
+            for name, idn, color, score in grp:
+                lines.append(f"{name:<{max_name}} {idn:<{max_id}} {color:<{max_color}} : {score}\n")
+            if i < len(groups) - 1:
                 lines.append("\n")
-
         return "".join(lines)
 
-
-
     def get_formatted_end_time(self) -> str:
-        """Formate end_time en 'DD/MM/YYYY à HH:MM:SS'"""
+        """
+        Format 'DD/MM/YYYY à HH:MM:SS'.
+        """
         return self.end_time.strftime("%d/%m/%Y à %H:%M:%S")
-    
+
     def get_formatted_start_time(self) -> str:
-        """Formate end_time en 'DD/MM/YYYY à HH:MM:SS'"""
+        """
+        Format 'DD/MM/YYYY à HH:MM:SS'.
+        """
         return self.start_time.strftime("%d/%m/%Y à %H:%M:%S")
 
     def get_serialized_round(self) -> dict:
         """
-        Sérialise ce round pour JSON,
-        en gérant start_time/end_time potentiellement à None.
+        Prépare l’objet pour sérialisation JSON,
+        avec start_time et end_time en str ou None.
         """
         return {
             "round_number": self.round_number,
-            "start_time":   self.start_time.strftime("%d/%m/%Y %H:%M:%S") if self.start_time else None,
-            "end_time":     self.end_time.strftime("%d/%m/%Y %H:%M:%S")   if self.end_time   else None,
-            "matches":      [match.get_serialized_match() for match in self.matches]
+            "start_time": self.start_time.strftime("%d/%m/%Y %H:%M:%S") if self.start_time else None,
+            "end_time": self.end_time.strftime("%d/%m/%Y %H:%M:%S") if self.end_time else None,
+            "matches": [m.get_serialized_match() for m in self.matches]
         }

@@ -107,17 +107,17 @@ Vous verrez le **menu principal** :
 3. 📂 **Charger un tournoi** reprenez un tournoi existant (en cours ou non) pour poursuivre sa gestion.
 4. 📊 **Afficher les rapports** .
 
-    [1] Liste des joueurs (ordre alphabétique)
+    **[1]** Liste des joueurs (ordre alphabétique)
 
-    [2] Liste des tournois enregistrés
+    **[2]** Liste des tournois enregistrés
 
-    [3] Infos d’un tournoi (nom, dates)
+    **[3]** Infos d’un tournoi (nom, dates)
 
-    [4] Liste des joueurs d’un tournoi (ordre alphabétique)
+    **[4]** Liste des joueurs d’un tournoi (ordre alphabétique)
 
-    [5] Liste des rounds et matches d’un tournoi
+    **[5]** Liste des rounds et matches d’un tournoi
 
-    [0] Retour au menu principal
+    **[0]** Retour au menu principal
 
 0. ❌ **Quitter**, fermeture du programme.
 

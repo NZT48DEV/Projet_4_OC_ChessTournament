@@ -1,13 +1,18 @@
 import os
-from storage.player_data     import load_players_from_json, load_player_from_json
-from storage.tournament_data import load_tournament_from_json
-from config                   import PLAYERS_FOLDER, TOURNAMENTS_FOLDER, ENTER_FOR_RAPPORT
-from views.tournament_view    import TournamentView
-from controllers.tournament_controller import TournamentController
-from utils.console            import clear_screen, wait_for_enter
-from utils.info_messages    import prompt_file_to_load
-from models.player_model      import Player
-from rich.console   import Console
+from rich.console                       import Console
+
+from config                             import PLAYERS_FOLDER, TOURNAMENTS_FOLDER, ENTER_FOR_RAPPORT
+from controllers.tournament_controller  import TournamentController
+from models.player_model                import Player
+from storage.player_data                import load_players_from_json, load_player_from_json
+from storage.tournament_data            import load_tournament_from_json
+from utils.console                      import clear_screen, wait_for_enter
+from utils.info_messages                import prompt_file_to_load
+from views.tournament_view              import TournamentView
+
+
+
+
 
 
 console = Console()

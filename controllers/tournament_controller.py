@@ -11,19 +11,19 @@ from config import (
     ENTER_FOR_CONTINUE,
     ENTER_FOR_MAIN_MENU
 )
-from controllers.round_controller import RoundController
-from models.match_model        import Match
-from models.player_model       import Player
-from models.round_model        import Round
-from models.tournament_model   import Tournament
-from storage.player_data       import load_player_from_json
-from storage.tournament_data   import save_tournament_to_json
-from utils.input_manager       import get_valid_input
-from utils.console             import clear_screen, wait_for_enter
-from utils.error_messages      import invalid_yes_no
-from utils.input_formatters    import format_yes_no
-from utils.input_validators    import is_valid_yes_no
-from views.tournament_view     import TournamentView
+from controllers.round_controller   import RoundController
+from models.match_model             import Match
+from models.player_model            import Player
+from models.round_model             import Round
+from models.tournament_model        import Tournament
+from storage.player_data            import load_player_from_json
+from storage.tournament_data        import save_tournament_to_json
+from utils.input_manager            import get_valid_input
+from utils.console                  import clear_screen, wait_for_enter
+from utils.error_messages           import invalid_yes_no
+from utils.input_formatters         import format_yes_no
+from utils.input_validators         import is_valid_yes_no
+from views.tournament_view          import TournamentView
 
 
 class TournamentController:

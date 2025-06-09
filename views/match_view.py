@@ -1,11 +1,14 @@
 from typing                 import List
-from models.match_model     import Match
 from rich.console           import Console
 from rich.table             import Table
 from rich.panel             import Panel
 from rich.text              import Text
 from rich.box               import ROUNDED, SIMPLE
+
 from config                 import DRAW_POINT, BYE_POINT, WIN_POINT
+from models.match_model     import Match
+
+
 
 
 class MatchView:

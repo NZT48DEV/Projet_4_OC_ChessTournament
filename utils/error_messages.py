@@ -1,6 +1,6 @@
 from rich.console   import Console
 
-from config         import MAX_DESCRIPTION_LENGTH, MIN_ROUND, MAX_ROUND
+from config         import MAX_DESCRIPTION_LENGTH, MIN_ROUND, MAX_ROUND, DEFAULT_NUMBER_OF_ROUND, MIN_PLAYER_AGE
 
 
 console = Console()
@@ -42,7 +42,7 @@ def invalid_id_national_chess():
 
 def invalid_min_player_age():
     console.print(
-        "\n[b red][ERREUR][/b red] Âge minimal pour s'inscrire : [b]5 ans[/b]."
+        f"\n[b red][ERREUR][/b red] Âge minimal pour s'inscrire : [b]{MIN_PLAYER_AGE} ans[/b]."
     )
 
 
@@ -68,7 +68,7 @@ def invalid_number_of_rounds():
     console.print(
         "\n[b red][ERREUR][/b red] Le nombre de rounds est [b]invalide[/b].\n"
         f"Entrez un [b yellow]nombre[/b yellow] entre [b]{MIN_ROUND}[/b] et [b]{MAX_ROUND}[/b].\n"
-        "ou appuyez sur [b yellow]Entrée[/b yellow] pour utiliser la valeur par défaut ([b]4 rounds[/b]).\n"
+        f"ou appuyez sur [b yellow]Entrée[/b yellow] pour utiliser la valeur par défaut ([b]{DEFAULT_NUMBER_OF_ROUND}[/b]).\n"
     )
 
 

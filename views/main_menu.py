@@ -1,13 +1,14 @@
 import os
+from rich.console                       import Console
 
-from controllers.player_controller import PlayerController
-from controllers.tournament_controller import TournamentController
-from storage.tournament_data import load_tournament_from_json
-from utils.console import clear_screen, wait_for_enter
-from utils.info_messages    import prompt_file_to_load
-from config import TOURNAMENTS_FOLDER, ENTER_FOR_MAIN_MENU
-from views.reports_view import ReportsView
-from rich.console   import Console
+from config                             import TOURNAMENTS_FOLDER, ENTER_FOR_MAIN_MENU
+from controllers.player_controller      import PlayerController
+from controllers.tournament_controller  import TournamentController
+from storage.tournament_data            import load_tournament_from_json
+from utils.console                      import clear_screen, wait_for_enter
+from utils.info_messages                import prompt_file_to_load
+from views.reports_view                 import ReportsView
+
 
 console = Console()
 

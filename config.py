@@ -22,6 +22,7 @@ BYE_POINT = 0.5
 DRAW_POINT = 0.5
 WIN_POINT = 1.0
 LOSE_POINT = 0.0
+DEFAULT_NUMBER_OF_ROUND = 4
 
 ENTER_FOR_CONTINUE = "continuer…"
 ENTER_FOR_MAIN_MENU = "revenir au menu principal."

@@ -1,9 +1,10 @@
 from typing                     import List
-from models.round_model         import Round
-from models.player_model        import Player
 from rich.console               import Console
 from rich.panel                 import Panel
 from rich.text                  import Text
+
+from models.round_model         import Round
+from models.player_model        import Player
 from utils.console              import clear_screen
 
 class RoundView:

@@ -1,51 +1,38 @@
 import os
-
-from utils.input_formatters import (
-    format_tournament_name,
-    format_date,
-    format_location_name,
-    format_number_of_rounds,
-    format_description,
-    format_id_national_chess,
-)
-from utils.input_validators import (
-    is_valid_tournament_name,
-    is_valid_start_date,
-    is_valid_end_date,
-    is_valid_location_name,
-    is_valid_number_of_rounds,
-    is_valid_description,
-    is_valid_id_national_chess,
-)
-from utils.error_messages import (
-    invalid_tournament_name,
-    invalid_tournament_date,
-    invalid_location_name,
-    invalid_number_of_rounds,
-    invalid_description,
-    invalid_id_national_chess,
-)
-
-from utils.info_messages import (
-    tournament_incomplete_text,
-    tournament_info_text,
-    player_already_in_tournament_text
-)
-
-from utils.input_manager            import get_valid_input
-from utils.console                  import clear_screen
-from controllers.player_controller  import PlayerController
-from config                         import PLAYERS_FOLDER, PLAYERS_FILENAME, ENTER_FOR_CONTINUE
-from views.player_view              import PlayerView
-from models.tournament_model        import Tournament
-from utils.console                  import wait_for_enter
-from rich.console                   import Console
-from models.player_model            import Player
 from rich.console                   import Console
 from rich.table                     import Table
 from rich                           import box 
+
+from config                         import PLAYERS_FOLDER, PLAYERS_FILENAME, ENTER_FOR_CONTINUE, DEFAULT_NUMBER_OF_ROUND
+from controllers.player_controller  import PlayerController
+from models.player_model            import Player
 from models.tournament_model        import Tournament
+from utils.console                  import wait_for_enter
 from utils.console                  import clear_screen
+from utils.input_manager            import get_valid_input
+from views.player_view              import PlayerView
+from utils.input_formatters         import (format_tournament_name,
+                                            format_date,
+                                            format_location_name,
+                                            format_number_of_rounds,
+                                            format_description,
+                                            format_id_national_chess,)
+from utils.error_messages           import (invalid_tournament_name,
+                                            invalid_tournament_date,
+                                            invalid_location_name,
+                                            invalid_number_of_rounds,
+                                            invalid_description,
+                                            invalid_id_national_chess,)
+from utils.info_messages            import (tournament_incomplete_text,
+                                            tournament_info_text,
+                                            player_already_in_tournament_text)
+from utils.input_validators         import (is_valid_tournament_name,
+                                            is_valid_start_date,
+                                            is_valid_end_date,
+                                            is_valid_location_name,
+                                            is_valid_number_of_rounds,
+                                            is_valid_description,
+                                            is_valid_id_national_chess)
 
 
 console = Console()
@@ -110,7 +97,7 @@ class TournamentView:
         print("🔢           NOMBRE DE ROUNDS         🔢")
         print("="*40)
         return get_valid_input(
-            prompt="Nombre de rounds (par défaut 4) : ",
+            prompt=f"Nombre de rounds (par défaut {DEFAULT_NUMBER_OF_ROUND}) : ",
             formatter=format_number_of_rounds,
             validator=is_valid_number_of_rounds,
             message_error=invalid_number_of_rounds,

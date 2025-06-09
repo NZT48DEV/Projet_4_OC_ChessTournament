@@ -1,4 +1,4 @@
-from config                 import DATE_STORAGE_FORMAT, MAX_NAME_LENGTH
+from config                 import DATE_STORAGE_FORMAT, MAX_NAME_LENGTH, DEFAULT_NUMBER_OF_ROUND
 from utils.date_helpers     import parse_raw_date
 from utils.error_messages   import invalid_number_of_rounds
 
@@ -96,7 +96,7 @@ def format_number_of_rounds(number_of_rounds: str) -> int:
     number_of_rounds = number_of_rounds.strip()
 
     if number_of_rounds == "":
-        return 4
+        return DEFAULT_NUMBER_OF_ROUND
     
     try:
         return int(number_of_rounds)

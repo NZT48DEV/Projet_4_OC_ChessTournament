@@ -1,5 +1,5 @@
-from views.main_menu import Menu
+from views.main_menu import MenuView
 
 if __name__ == "__main__":
-    menu = Menu()
+    menu = MenuView()
     menu.menu()

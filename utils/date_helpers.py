@@ -1,4 +1,5 @@
 from datetime import datetime
+
 from config import DATE_STORAGE_FORMAT, DATE_INPUT_FORMAT
 
 
@@ -10,7 +11,7 @@ def get_today() -> datetime:
 def parse_date_str(date_str: str) -> datetime | None:
     """
     Essaie de parser une date au format DATE_STORAGE_FORMAT (AAAA-MM-JJ).
-    
+
     Args:
         date_str (str): La date en chaîne.
 
@@ -21,7 +22,7 @@ def parse_date_str(date_str: str) -> datetime | None:
         return datetime.strptime(date_str, DATE_STORAGE_FORMAT)
     except (ValueError, TypeError):
         return None
-    
+
 
 def parse_raw_date(date_str: str) -> datetime | None:
     """
@@ -33,7 +34,7 @@ def parse_raw_date(date_str: str) -> datetime | None:
     """
     if not isinstance(date_str, str):
         return None
-    
+
     cleaned = date_str.strip()
     for sep in [" ", "-", ".", "/"]:
         cleaned = cleaned.replace(sep, "")

@@ -1,49 +1,165 @@
-import time
-from utils.input_formatters import format_first_name, format_last_name, format_date, format_id_national_chess
-from utils.input_validators import is_valid_name, is_valid_player_birthdate, is_valid_id_national_chess
-from utils.error_messages import invalide_name, invalid_date, invalide_id_national_chess
+from rich.console import Console
+
+from models.player_model import Player
+from utils.input_formatters import (
+    format_first_name,
+    format_name,
+    format_date,
+    format_id_national_chess,
+)
+from utils.input_validators import (
+    is_valid_name,
+    is_valid_player_birthdate,
+    is_valid_id_national_chess,
+)
+from utils.error_messages import (
+    invalid_name,
+    invalid_date_of_birth,
+    invalid_id_national_chess,
+)
+from utils.info_messages import (
+    player_added_text,
+    player_updated_text,
+    player_already_exist_text,
+    player_incomplete_text,
+    player_info_text,
+    player_nonexistent_text,
+    player_added_to_chesstournament_text,
+    player_already_in_tournament_text
+)
+from utils.console import clear_screen
 from utils.input_manager import get_valid_input
 
 
-class CreatePlayer():
+console = Console()
 
-    def display_create_player_menu(self):
+
+class PlayerView:
+    """
+    Vues CLI pour la création incrémentale d'un joueur.
+    """
+
+    @staticmethod
+    def ask_id_national_chess() -> str:
+        clear_screen()
         print("\n" + "=" * 40)
-        print("👤    CRÉATION D'UN NOUVEAU JOUEUR    👤")
+        print("🆔        IDENTIFIANT NATIONAL        🆔")
         print("=" * 40)
-
-        first_name = get_valid_input(
-            prompt="Quel est votre prénom : ",
-            formatter=format_first_name,
-            validator=is_valid_name,
-            message_error=invalide_name
-        )
-
-        last_name = get_valid_input(
-            prompt="Quel est votre nom : ",
-            formatter=format_last_name,
-            validator=is_valid_name,
-            message_error=invalide_name
-        )
-
-        date_of_birth = get_valid_input(
-            prompt="Quelle est votre date de naissance (JJAAMMMM) : ",
-            formatter=format_date,
-            validator=is_valid_player_birthdate,
-            message_error=invalid_date
-        )
-
-        id_national_chess = get_valid_input(
-            prompt="Quel est votre identifiant national d'échecs (XX00000) : ",
+        return get_valid_input(
+            prompt="Votre IDN d'échecs (XX00000) : ",
             formatter=format_id_national_chess,
             validator=is_valid_id_national_chess,
-            message_error=invalide_id_national_chess
+            message_error=invalid_id_national_chess,
         )
-    
-        return {
-            "first_name": first_name,
-            "last_name": last_name,
-            "date_of_birth": date_of_birth,
-            "id_national_chess": id_national_chess
-        }
-    
+
+    @staticmethod
+    def ask_first_name() -> str:
+        clear_screen()
+        print("\n" + "=" * 40)
+        print("👤          PRÉNOM DU JOUEUR          👤")
+        print("=" * 40)
+        return get_valid_input(
+            prompt="Prénom : ",
+            formatter=format_first_name,
+            validator=is_valid_name,
+            message_error=invalid_name,
+        )
+
+    @staticmethod
+    def ask_last_name() -> str:
+        clear_screen()
+        print("\n" + "=" * 40)
+        print("👤            NOM DU JOUEUR           👤")
+        print("=" * 40)
+        return get_valid_input(
+            prompt="Nom : ",
+            formatter=format_name,
+            validator=is_valid_name,
+            message_error=invalid_name,
+        )
+
+    @staticmethod
+    def ask_date_of_birth() -> str:
+        clear_screen()
+        print("\n" + "=" * 40)
+        print("🎂          DATE DE NAISSANCE         🎂")
+        print("=" * 40)
+        return get_valid_input(
+            prompt="Date de naissance (JJMMAAAA) : ",
+            formatter=format_date,
+            validator=is_valid_player_birthdate,
+            message_error=invalid_date_of_birth,
+        )
+
+    @staticmethod
+    def list_players(players: list[Player]) -> None:
+        """
+        Tri la liste des joueurs par nom (MAJ) puis prénom (Capitalisé).
+        """
+        # Tri par nom (MAJ) puis prénom (Capitalisé)
+        sorted_list = sorted(
+            players,
+            key=lambda p: (p.last_name.lower(), p.first_name.lower())
+        )
+        for idx, player in enumerate(sorted_list, start=1):
+            print(
+                f"{idx}. {
+                    player.last_name.upper()} {
+                    player.first_name.capitalize()} (IDN : {
+                    player.id_national_chess})")
+
+    @staticmethod
+    def display_player_added(player: Player) -> None:
+        """
+        Efface l'écran et affiche le message de succès pour la création d'un joueur.
+        """
+        clear_screen()
+        console.print(player_added_text())
+        console.print(player_info_text(player))
+
+    @staticmethod
+    def display_player_updated(player: Player) -> None:
+        """
+        Efface l'écran et affiche le message pour confirmer la modification du profil utilisateur.
+        """
+        clear_screen()
+        console.print(player_updated_text())
+        console.print(player_info_text(player))
+
+    @staticmethod
+    def display_player_already_exist(player: Player) -> None:
+        """
+        Efface l'écran et affiche le message pour informer que le joueur est déjà existant.
+        """
+        clear_screen()
+        console.print(player_already_exist_text())
+        console.print(player_info_text(player))
+
+    @staticmethod
+    def display_player_incomplete(player: Player) -> None:
+        """
+        Efface l'écran et affiche le message pour informer que le profil du joueur est incomplet.
+        """
+        clear_screen()
+        console.print(player_incomplete_text())
+        console.print(player_info_text(player))
+
+    @staticmethod
+    def display_player_info(player: Player) -> None:
+        console.print(player_info_text(player))
+
+    @staticmethod
+    def display_nonexistent_player(player: Player) -> None:
+        clear_screen()
+        console.print(player_nonexistent_text(player))
+
+    @staticmethod
+    def display_player_added_to_chesstournament_text(player: Player) -> None:
+        console.print(player_added_to_chesstournament_text(player))
+
+    @staticmethod
+    def display_duplicate_player(id_national: str) -> None:
+        """
+        Affiche “le joueur est déjà inscrit dans ce tournoi”.
+        """
+        console.print(player_already_in_tournament_text(id_national))

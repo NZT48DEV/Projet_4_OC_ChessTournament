@@ -66,7 +66,7 @@ ChessTournament/
 1. **Clonez le dépôt**
 
    ```bash
-   git clone https://votre-repo/ChessTournament.git
+   git clone https://github.com/NZT48DEV/Projet_4_OC_ChessTournament.git
    cd ChessTournament
    ```
 

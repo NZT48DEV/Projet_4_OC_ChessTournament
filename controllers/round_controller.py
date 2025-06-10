@@ -25,44 +25,6 @@ class RoundController:
         self.players: list[Player] = tournament.list_of_players
         self.rounds: list[Round] = tournament.list_of_rounds or []
 
-    def make_round(self, index: int) -> Round:
-        """
-        Crée un Round, démarre l'horodatage et génère les appariements.
-        Initialise les scores et snapshots des matchs.
-        """
-        rnd = Round(f"Round {index}")
-        rnd.start_round()
-        rnd.generate_pairings(self.players)
-        for match in rnd.matches:
-            match.assign_color()
-            # initialisation des scores
-            match.match_score_1 = None
-            if match.player_2:
-                match.match_score_2 = None
-                match.winner = None
-            else:
-                match.winner = None
-            # snapshot initial
-            if match.player_2:
-                p1, p2 = match.player_1, match.player_2
-                match._snap1 = {
-                    "id_national_chess": p1.id_national_chess,
-                    "match_score": None,
-                    "tournament_score": None,
-                    "rank": None,
-                    "color": match.color_player_1,
-                    "played_with": [p2.id_national_chess]
-                }
-                match._snap2 = {
-                    "id_national_chess": p2.id_national_chess,
-                    "match_score": None,
-                    "tournament_score": None,
-                    "rank": None,
-                    "color": match.color_player_2,
-                    "played_with": [p1.id_national_chess]
-                }
-        return rnd
-
     def run(self) -> None:
         """
         Démarre la séquence de rounds depuis le premier.
@@ -109,12 +71,43 @@ class RoundController:
         )
         return rnd
 
-    def _is_match_completed(self, match: Match) -> bool:
-        """Retourne True si le match a déjà ses scores renseignés."""
-        if match.player_2 is None:
-            return match.match_score_1 is not None
-        return (match.match_score_1 is not None
-                and match.match_score_2 is not None)
+    def make_round(self, index: int) -> Round:
+        """
+        Crée un Round, démarre l'horodatage et génère les appariements.
+        Initialise les scores et snapshots des matchs.
+        """
+        rnd = Round(f"Round {index}")
+        rnd.start_round()
+        rnd.generate_pairings(self.players)
+        for match in rnd.matches:
+            match.assign_color()
+            # initialisation des scores
+            match.match_score_1 = None
+            if match.player_2:
+                match.match_score_2 = None
+                match.winner = None
+            else:
+                match.winner = None
+            # snapshot initial
+            if match.player_2:
+                p1, p2 = match.player_1, match.player_2
+                match._snap1 = {
+                    "id_national_chess": p1.id_national_chess,
+                    "match_score": None,
+                    "tournament_score": None,
+                    "rank": None,
+                    "color": match.color_player_1,
+                    "played_with": [p2.id_national_chess]
+                }
+                match._snap2 = {
+                    "id_national_chess": p2.id_national_chess,
+                    "match_score": None,
+                    "tournament_score": None,
+                    "rank": None,
+                    "color": match.color_player_2,
+                    "played_with": [p1.id_national_chess]
+                }
+        return rnd
 
     def _execute_match(self, match: Match, rnd: Round, rnd_num: int) -> None:
         """
@@ -131,6 +124,13 @@ class RoundController:
             if self._is_round_finished(rnd):
                 rnd.end_round()
                 self._save_progress(rnd_num)
+
+    def _is_match_completed(self, match: Match) -> bool:
+        """Retourne True si le match a déjà ses scores renseignés."""
+        if match.player_2 is None:
+            return match.match_score_1 is not None
+        return (match.match_score_1 is not None
+                and match.match_score_2 is not None)
 
     def _finalize_round(self, rnd: Round) -> None:
         """Affiche le rapport et le classement intermédiaire pour le round achevé."""

@@ -8,6 +8,7 @@ from storage.player_data import load_players_from_json, load_player_from_json
 from storage.tournament_data import load_tournament_from_json
 from utils.console import clear_screen, wait_for_enter
 from utils.info_messages import prompt_file_to_load
+from utils.ui_helpers import show_tournament_information
 from views.tournament_view import TournamentView
 
 
@@ -98,10 +99,7 @@ class ReportsView:
         miss_info = "[Info manquante]"
         no_desc = "[Pas de description]"
 
-        clear_screen()
-        print("\n" + "=" * 40)
-        print("🏆       INFORMATIONS DU TOURNOI      🏆")
-        print("=" * 40 + "\n")
+        show_tournament_information()
 
         # Nom du tournoi (toujours présent dans le JSON)
         print(f"Nom du tournoi  : {data['tournament_name']}")

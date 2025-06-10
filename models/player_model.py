@@ -25,20 +25,6 @@ class Player:
         self.rank = rank
         self.played_with = played_with if played_with is not None else []
 
-    def get_serialized_player(self) -> Dict[str, Any]:
-        """
-        Sérialise le joueur pour JSON.
-        """
-        return {
-            "id_national_chess": self.id_national_chess,
-            "first_name": self.first_name,
-            "last_name": self.last_name,
-            "date_of_birth": self.date_of_birth,
-            "tournament_score": self.tournament_score,
-            "rank": self.rank,
-            "played_with": list(self.played_with)
-        }
-
     def get_tournament_data(self) -> dict:
         """
         Sérialisation “light” pour intégrer le joueur dans un tournoi :
@@ -65,3 +51,17 @@ class Player:
             rank=data.get("rank", 0),
             played_with=data.get("played_with", [])
         )
+
+    def get_serialized_player(self) -> Dict[str, Any]:
+        """
+        Sérialise le joueur pour JSON.
+        """
+        return {
+            "id_national_chess": self.id_national_chess,
+            "first_name": self.first_name,
+            "last_name": self.last_name,
+            "date_of_birth": self.date_of_birth,
+            "tournament_score": self.tournament_score,
+            "rank": self.rank,
+            "played_with": list(self.played_with)
+        }

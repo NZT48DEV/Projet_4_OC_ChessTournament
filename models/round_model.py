@@ -25,27 +25,6 @@ class Round:
         self.start_time: datetime.datetime | None = None
         self.end_time: datetime.datetime | None = None
 
-    def start_round(self) -> None:
-        """
-        Définit l'heure de début du round à maintenant.
-        """
-        self.start_time = datetime.datetime.now()
-
-    def end_round(self) -> None:
-        """
-        Définit l'heure de fin du round à maintenant.
-        """
-        self.end_time = datetime.datetime.now()
-
-    def add_match(self, match: Match) -> None:
-        """
-        Ajoute un match au round.
-
-        Args:
-            match: Instance de Match à ajouter.
-        """
-        self.matches.append(match)
-
     def generate_pairings(self, players: List[Player]) -> None:
         """
         Génère les appariements pour ce round selon la logique suisse :
@@ -138,17 +117,38 @@ class Round:
             p2.played_with.append(p1.id_national_chess)
             self.add_match(Match(f"{self.round_number} - Rematch", (p1, p2)))
 
-    def get_formatted_end_time(self) -> str:
+    def add_match(self, match: Match) -> None:
         """
-        Format 'DD/MM/YYYY à HH:MM:SS'.
+        Ajoute un match au round.
+
+        Args:
+            match: Instance de Match à ajouter.
         """
-        return self.end_time.strftime("%d/%m/%Y à %H:%M:%S")
+        self.matches.append(match)
+
+    def start_round(self) -> None:
+        """
+        Définit l'heure de début du round à maintenant.
+        """
+        self.start_time = datetime.datetime.now()
+
+    def end_round(self) -> None:
+        """
+        Définit l'heure de fin du round à maintenant.
+        """
+        self.end_time = datetime.datetime.now()
 
     def get_formatted_start_time(self) -> str:
         """
         Format 'DD/MM/YYYY à HH:MM:SS'.
         """
         return self.start_time.strftime("%d/%m/%Y à %H:%M:%S")
+
+    def get_formatted_end_time(self) -> str:
+        """
+        Format 'DD/MM/YYYY à HH:MM:SS'.
+        """
+        return self.end_time.strftime("%d/%m/%Y à %H:%M:%S")
 
     def get_serialized_round(self) -> dict:
         """

@@ -107,6 +107,9 @@ class PlayerView:
     def display_player_added(player: Player) -> None:
         """
         Efface l'écran et affiche le message de succès pour la création d'un joueur.
+
+        Args:
+            player (Player): L'instance du joueur qui a été créé.
         """
         clear_screen()
         console.print(player_added_text())
@@ -115,7 +118,10 @@ class PlayerView:
     @staticmethod
     def display_player_updated(player: Player) -> None:
         """
-        Efface l'écran et affiche le message pour confirmer la modification du profil utilisateur.
+        Efface l'écran et affiche le message confirmant la modification du profil utilisateur.
+
+        Args:
+            player (Player): L'instance du joueur dont le profil a été mis à jour.
         """
         clear_screen()
         console.print(player_updated_text())
@@ -124,7 +130,10 @@ class PlayerView:
     @staticmethod
     def display_player_already_exist(player: Player) -> None:
         """
-        Efface l'écran et affiche le message pour informer que le joueur est déjà existant.
+        Efface l'écran et affiche le message pour informer que le joueur existe déjà.
+
+        Args:
+            player (Player): L'instance du joueur déjà existant.
         """
         clear_screen()
         console.print(player_already_exist_text())
@@ -134,27 +143,50 @@ class PlayerView:
     def display_player_incomplete(player: Player) -> None:
         """
         Efface l'écran et affiche le message pour informer que le profil du joueur est incomplet.
+
+        Args:
+            player (Player): L'instance du joueur dont le profil est incomplet.
         """
         clear_screen()
         console.print(player_incomplete_text())
-        console.print(player_info_text(player))
 
     @staticmethod
     def display_player_info(player: Player) -> None:
+        """
+        Affiche les informations complètes d'un joueur.
+
+        Args:
+            player (Player): L'instance du joueur dont on veut afficher les détails.
+        """
         console.print(player_info_text(player))
 
     @staticmethod
     def display_nonexistent_player(player: Player) -> None:
+        """
+        Avertit que le joueur spécifié n'existe pas.
+
+        Args:
+            player (Player): L'instance du joueur recherché (inexistante).
+        """
         clear_screen()
         console.print(player_nonexistent_text(player))
 
     @staticmethod
     def display_player_added_to_chesstournament_text(player: Player) -> None:
+        """
+        Informe qu'un joueur a été ajouté au tournoi d'échecs.
+
+        Args:
+            player (Player): L'instance du joueur ajouté au tournoi.
+        """
         console.print(player_added_to_chesstournament_text(player))
 
     @staticmethod
     def display_duplicate_player(id_national: str) -> None:
         """
-        Affiche “le joueur est déjà inscrit dans ce tournoi”.
+        Informe que le joueur avec l'ID national spécifié est déjà inscrit dans ce tournoi.
+
+        Args:
+            id_national (str): Identifiant national du joueur dupliqué.
         """
         console.print(player_already_in_tournament_text(id_national))

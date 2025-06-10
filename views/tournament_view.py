@@ -40,7 +40,9 @@ from utils.ui_helpers import (
     show_start_date,
     show_end_date,
     show_number_of_rounds,
-    show_description
+    show_description,
+    show_players_inscription,
+    show_players_list
 )
 
 
@@ -122,10 +124,7 @@ class TournamentView:
           • Titre “👥  LISTE DES JOUEURS  👥”
           • Puis chaque joueur (via PlayerView.list_players).
         """
-        clear_screen()
-        print("\n" + "=" * 40)
-        print("👥          LISTE DES JOUEURS         👥")
-        print("=" * 40 + "\n")
+        show_players_list()
 
         if list_of_players:
             PlayerView.list_players(list_of_players)
@@ -137,11 +136,9 @@ class TournamentView:
     def show_registration_header(current_count: int, max_players: int):
         """
         Affiche uniquement le bloc d’en-tête d’inscription :
-        “♟️➕ INSCRIPTION DES JOUEURS ➕♟️” + “Nombre de joueurs inscrits : current_count / max_players”
+        “♟️➕ INSCRIPTION DES JOUEURS ➕♟️”
         """
-        print("\n" + "=" * 40)
-        print("♟️➕     INSCRIPTION DES JOUEURS     ➕♟️")
-        print("=" * 40 + "\n")
+        show_players_inscription()
         print(f"Nombre de joueurs inscrits : {current_count} / {max_players}\n")
 
     @staticmethod

@@ -69,3 +69,22 @@ def show_description() -> str:
     print("\n" + "=" * 40)
     print("📝             DESCRIPTION            📝")
     print("=" * 40)
+
+
+def show_tournament_information() -> str:
+    print("\n" + "=" * 40)
+    print("🏆       INFORMATIONS DU TOURNOI      🏆")
+    print("=" * 40 + "\n")
+
+
+def show_players_inscription() -> str:
+    print("\n" + "=" * 40)
+    print("♟️➕     INSCRIPTION DES JOUEURS     ➕♟️")
+    print("=" * 40 + "\n")
+
+
+def show_players_list() -> str:
+    clear_screen()
+    print("\n" + "=" * 40)
+    print("👥          LISTE DES JOUEURS         👥")
+    print("=" * 40 + "\n")

@@ -20,54 +20,6 @@ class PlayerController:
     """
 
     @staticmethod
-    def _get_missing_fields(player: Player) -> list[str]:
-        """
-        Identifie les attributs d'un joueur qui sont vides ou non définis.
-
-        Args:
-            player (Player): Instance du modèle Player à vérifier.
-
-        Returns:
-            list[str]: Liste des noms de champs manquants ("first_name", "last_name", "date_of_birth").
-        """
-        return [
-            field
-            for field in ("first_name", "last_name", "date_of_birth")
-            if not getattr(player, field)
-        ]
-
-    @staticmethod
-    def _complete_fields(player: Player, fields: list[str]) -> None:
-        """
-        Demande à l'utilisateur de saisir et sauvegarde chaque champ spécifié.
-
-        Pour chaque nom de champ fourni :
-        1. Appelle la méthode PlayerView correspondante.
-        2. Assigne la valeur retournée sur l'attribut du joueur.
-        3. Persiste immédiatement le joueur en JSON.
-
-        Args:
-            player (Player): Instance du modèle Player à mettre à jour.
-            fields (list[str]): Liste des noms de champs à compléter.
-        """
-        field_map = {
-            "first_name": PlayerView.ask_first_name,
-            "last_name": PlayerView.ask_last_name,
-            "date_of_birth": PlayerView.ask_date_of_birth,
-        }
-        for field in fields:
-            # Appel dynamique de la fonction de saisie
-            value = field_map[field]()
-            # Mise à jour de l'attribut
-            setattr(player, field, value)
-            # Persistance JSON immédiate
-            save_player_to_json(
-                player.get_serialized_player(),
-                PLAYERS_FOLDER,
-                f"{player.id_national_chess}.json"
-            )
-
-    @staticmethod
     def _load_or_create(id_national: str, prompt_modify: bool) -> Player:
         """
         Charge un profil joueur depuis le JSON ou en crée un nouveau.
@@ -134,6 +86,54 @@ class PlayerController:
             )
             PlayerView.display_player_added(player)
             return player
+
+    @staticmethod
+    def _get_missing_fields(player: Player) -> list[str]:
+        """
+        Identifie les attributs d'un joueur qui sont vides ou non définis.
+
+        Args:
+            player (Player): Instance du modèle Player à vérifier.
+
+        Returns:
+            list[str]: Liste des noms de champs manquants ("first_name", "last_name", "date_of_birth").
+        """
+        return [
+            field
+            for field in ("first_name", "last_name", "date_of_birth")
+            if not getattr(player, field)
+        ]
+
+    @staticmethod
+    def _complete_fields(player: Player, fields: list[str]) -> None:
+        """
+        Demande à l'utilisateur de saisir et sauvegarde chaque champ spécifié.
+
+        Pour chaque nom de champ fourni :
+        1. Appelle la méthode PlayerView correspondante.
+        2. Assigne la valeur retournée sur l'attribut du joueur.
+        3. Persiste immédiatement le joueur en JSON.
+
+        Args:
+            player (Player): Instance du modèle Player à mettre à jour.
+            fields (list[str]): Liste des noms de champs à compléter.
+        """
+        field_map = {
+            "first_name": PlayerView.ask_first_name,
+            "last_name": PlayerView.ask_last_name,
+            "date_of_birth": PlayerView.ask_date_of_birth,
+        }
+        for field in fields:
+            # Appel dynamique de la fonction de saisie
+            value = field_map[field]()
+            # Mise à jour de l'attribut
+            setattr(player, field, value)
+            # Persistance JSON immédiate
+            save_player_to_json(
+                player.get_serialized_player(),
+                PLAYERS_FOLDER,
+                f"{player.id_national_chess}.json"
+            )
 
     @staticmethod
     def create_player() -> Player:

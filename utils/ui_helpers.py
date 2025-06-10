@@ -69,4 +69,3 @@ def show_description() -> str:
     print("\n" + "=" * 40)
     print("📝             DESCRIPTION            📝")
     print("=" * 40)
-

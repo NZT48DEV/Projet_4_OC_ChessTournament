@@ -46,7 +46,6 @@ class PlayerView:
     Vues CLI pour la création incrémentale d'un joueur.
     """
 
-
     @staticmethod
     def ask_id_national_chess() -> str:
         show_id_national_chess()
@@ -159,5 +158,3 @@ class PlayerView:
         Affiche “le joueur est déjà inscrit dans ce tournoi”.
         """
         console.print(player_already_in_tournament_text(id_national))
-
-    

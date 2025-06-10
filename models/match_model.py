@@ -59,7 +59,7 @@ class Match:
             f"[{self.color_player_1}] : {self.match_score_1} point(s)\n"
             f"{self.player_2.first_name} {self.player_2.last_name} "
             f"[{self.color_player_2}] : {self.match_score_2} point(s)"
-            )
+        )
 
     def assign_color(self) -> None:
         """

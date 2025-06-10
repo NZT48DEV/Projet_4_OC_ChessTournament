@@ -1,9 +1,9 @@
 from rich.console import Console
 
 from config import (
-    MAX_DESCRIPTION_LENGTH, 
-    MIN_ROUND, MAX_ROUND, 
-    DEFAULT_NUMBER_OF_ROUND, 
+    MAX_DESCRIPTION_LENGTH,
+    MIN_ROUND, MAX_ROUND,
+    DEFAULT_NUMBER_OF_ROUND,
     MIN_PLAYER_AGE,
     MIN_DATE_OF_BIRTH,
     TODAY_STR,
@@ -39,9 +39,10 @@ def invalid_first_name():
     console.print(
         "\n[b red][ERREUR][/b red] Le prénom est [b]invalide.[/b]\n"
         "Il doit contenir [b]uniquement des lettres[/b]\n"
-        f"et avoir [b]au minimum {MIN_FIRST_NAME_LENGTH} caractères,[/b]" 
+        f"et avoir [b]au minimum {MIN_FIRST_NAME_LENGTH} caractères,[/b]"
         f" et au maximum [b]{MAX_FIRST_NAME_LENGTH} caractères.[/b]\n"
     )
+
 
 def invalid_last_name():
     show_last_name()
@@ -68,7 +69,8 @@ def invalid_tournament_start_date():
     show_start_date()
     console.print(
         "\n[b red][ERREUR][/b red] La date est [b]invalide.[/b]\n"
-        f"Elle doit contenir [b]uniquement {DATE_LENGTH} chiffres[/b] et être au format [b yellow]JJMMAAAA[/b yellow].\n"
+        f"Elle doit contenir [b]uniquement {DATE_LENGTH} chiffres[/b]"
+        " et être au format [b yellow]JJMMAAAA[/b yellow].\n"
         "La date de [b yellow]début[/b yellow] doit être : [b]supérieur[/b] ou [b]égal[/b] à la date du jour\n"
         f"[b]Exemple[/b] : Date de début : [b][{TODAY_STR}][/b] | Date de fin : [b]{TODAY_STR} ou supérieur[/b]\n"
     )
@@ -78,11 +80,12 @@ def invalid_tournament_end_date():
     show_end_date()
     console.print(
         "\n[b red][ERREUR][/b red] La date est [b]invalide.[/b]\n"
-        f"Elle doit contenir [b]uniquement {DATE_LENGTH} chiffres[/b]" 
+        f"Elle doit contenir [b]uniquement {DATE_LENGTH} chiffres[/b]"
         " et être au format [b yellow]JJMMAAAA[/b yellow].\n"
         "La date de [b yellow]fin[/b yellow] doit être [b]supérieur[/b] ou [b]égal[/b] à la date de début\n"
         f"[b]Exemple[/b] : Date de début : [b]{TODAY_STR}[/b] | Date de fin : [b][{TODAY_STR}] ou supérieur[/b]\n"
     )
+
 
 def invalid_id_national_chess():
     show_id_national_chess()
@@ -98,7 +101,7 @@ def invalid_tournament_name():
     console.print(
         "\n[b red][ERREUR][/b red] Le nom du tournoi est [b]invalide[/b].\n"
         "Il doit contenir [b]uniquement des lettres et/ou des chiffres[/b]\n"
-        f"et avoir au minimum [b]{MIN_TOURNAMENT_NAME_LENGTH}[/b] caractère(s)," 
+        f"et avoir au minimum [b]{MIN_TOURNAMENT_NAME_LENGTH}[/b] caractère(s),"
         f" et au maximum [b]{MAX_TOURNAMENT_NAME_LENGTH}[/b] caractère(s).\n"
         "Exemple : [b]Le tournoi des 6 nations[/b]\n"
     )

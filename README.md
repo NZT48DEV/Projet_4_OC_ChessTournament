@@ -73,9 +73,9 @@ ChessTournament/
 2. **Créez un environnement virtuel**
 
    ```bash
-   python3 -m venv .venv
-   source .venv/bin/activate    # macOS/Linux
-   .venv\Scripts\activate       # Windows
+   python3 -m venv .env
+   source .env/bin/activate    # macOS/Linux
+   .env\Scripts\activate       # Windows
    ```
 
 3. **Installez les dépendances**

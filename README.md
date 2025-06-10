@@ -131,7 +131,7 @@ python main.py
 
 Vous verrez le **menu principal** :
 
-1. 🧑 Créer un joueur
+1. ♟️ Créer un joueur
 2. 🏆 Créer un tournoi
 3. 📂 Charger un tournoi
 4. 📊 Afficher des rapports
@@ -141,7 +141,7 @@ Vous verrez le **menu principal** :
 
 **Les flux** :
 
-1. 🧑 **Créer** quelques joueurs via le menu (nom, prénom, date de naissance, classement).
+1. ♟️ **Créer** quelques joueurs via le menu (nom, prénom, date de naissance, classement).
 2. 🏆 **Créer un tournoi** 
     - saisissez nom, lieu, date de début, date de fin et nombre de rounds
     - sélectionnez/ajoutez les joueurs 

@@ -51,7 +51,6 @@ class MenuView:
                 clear_screen()
                 tournoi = TournamentController()
                 tournoi.run()
-                wait_for_enter(ENTER_FOR_MAIN_MENU)
 
             elif choix == "3":
                 clear_screen()

@@ -53,7 +53,8 @@ class RoundView:
         header = Text(f"{rnd.round_number}  ", style="bold white on blue")
         header.append("– Récap", style="bold white on blue")
         RoundView.console.print(Panel(header, expand=False, border_style="blue"))
-        RoundView.console.print(rnd.get_round_report())
+        report = RoundView.format_round_report(rnd)
+        RoundView.console.print(report)
 
     @staticmethod
     def show_start_round(rnd: Round) -> None:
@@ -61,3 +62,40 @@ class RoundView:
         header = Text(f"{rnd.round_number}  ", style="bold white on blue")
         header.append("– En cours", style="bold white on blue")
         RoundView.console.print(Panel(header, expand=False, border_style="blue"))
+
+    @staticmethod
+    def format_round_report(rnd: Round) -> str:
+        """
+        Retourne un rapport textuel aligné des matchs de ce round,
+        plaçant les byes en premier et espaçant par des lignes vides.
+        """
+        # tri : byes d'abord
+        ordered = sorted(rnd.matches, key=lambda m: m.player_2 is not None)
+        groups: List[List[tuple]] = []
+        for m in ordered:
+            if m.player_2 is None:
+                p = m.player_1
+                groups.append([(f"{p.first_name} {p.last_name}", f"[{p.id_national_chess}]",
+                              "(Repos)", f"{m.match_score_1:.1f}")])
+            else:
+                p1, p2 = m.player_1, m.player_2
+                groups.append([
+                    (f"{p1.first_name} {p1.last_name}", f"[{p1.id_national_chess}]",
+                     f"({m.color_player_1})", f"{(m.match_score_1 or 0.0):.1f}"),
+                    (f"{p2.first_name} {p2.last_name}", f"[{p2.id_national_chess}]",
+                     f"({m.color_player_2})", f"{(m.match_score_2 or 0.0):.1f}")
+                ])
+        # calcul des largeurs
+        all_entries = [e for grp in groups for e in grp]
+        max_name = max((len(name) for name, *_ in all_entries), default=0)
+        max_id = max((len(idn) for _, idn, *_ in all_entries), default=0)
+        max_color = max((len(color) for *_, color, _ in all_entries), default=0)
+
+        # construction des lignes
+        lines = [f"\n{rnd.round_number} – Matchs :\n\n"]
+        for i, grp in enumerate(groups):
+            for name, idn, color, score in grp:
+                lines.append(f"{name:<{max_name}} {idn:<{max_id}} {color:<{max_color}} : {score}\n")
+            if i < len(groups) - 1:
+                lines.append("\n")
+        return "".join(lines)

@@ -9,7 +9,8 @@ from config import (
     TOURNAMENTS_FOLDER,
     PLAYERS_FOLDER,
     ENTER_FOR_CONTINUE,
-    ENTER_FOR_MAIN_MENU
+    ENTER_FOR_MAIN_MENU,
+    SWISS_MAX_PLAYERS_BASE
 )
 from controllers.round_controller import RoundController
 from models.match_model import Match
@@ -130,7 +131,7 @@ class TournamentController:
         sans proposer de quitter.
         """
         t = self.tournament
-        limit = t.number_of_rounds ** 2
+        limit = SWISS_MAX_PLAYERS_BASE ** t.number_of_rounds
         players: list[Player] = []
         count = 0
 
@@ -149,7 +150,7 @@ class TournamentController:
         Peut être quitté dès que l’on le souhaite.
         """
         t = self.tournament
-        limit = t.number_of_rounds ** 2
+        limit = SWISS_MAX_PLAYERS_BASE ** t.number_of_rounds
         players = t.list_of_players
 
         while True:

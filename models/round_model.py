@@ -136,44 +136,7 @@ class Round:
             paired.update({p1, p2})
             p1.played_with.append(p2.id_national_chess)
             p2.played_with.append(p1.id_national_chess)
-            self.add_match(Match(f"{self.round_number} - Match", (p1, p2)))
-
-    def get_round_report(self) -> str:
-        """
-        Retourne un rapport textuel aligné des matchs de ce round,
-        plaçant les byes en premier et espaçant par des lignes vides.
-        """
-        # tri : byes d'abord
-        ordered = sorted(self.matches, key=lambda m: m.player_2 is not None)
-        groups: List[List[tuple]] = []
-        for m in ordered:
-            if m.player_2 is None:
-                p = m.player_1
-                groups.append([(f"{p.first_name} {p.last_name}", f"[{p.id_national_chess}]",
-                              "(Repos)", f"{m.match_score_1:.1f}")])
-            else:
-                p1, p2 = m.player_1, m.player_2
-                groups.append([(f"{p1.first_name} {p1.last_name}",
-                                f"[{p1.id_national_chess}]",
-                                f"({m.color_player_1})",
-                                f"{(m.match_score_1 or 0.0):.1f}"),
-                               (f"{p2.first_name} {p2.last_name}",
-                                f"[{p2.id_national_chess}]",
-                                f"({m.color_player_2})",
-                                f"{(m.match_score_2 or 0.0):.1f}")])
-        # calcul des largeurs
-        all_entries = [e for grp in groups for e in grp]
-        max_name = max((len(name) for name, *_ in all_entries), default=0)
-        max_id = max((len(idn) for _, idn, *_ in all_entries), default=0)
-        max_color = max((len(color) for *_, color, _ in all_entries), default=0)
-        # constitution des lignes
-        lines = [f"\n{self.round_number} – Matchs :\n"]
-        for i, grp in enumerate(groups):
-            for name, idn, color, score in grp:
-                lines.append(f"{name:<{max_name}} {idn:<{max_id}} {color:<{max_color}} : {score}\n")
-            if i < len(groups) - 1:
-                lines.append("\n")
-        return "".join(lines)
+            self.add_match(Match(f"{self.round_number} - Rematch", (p1, p2)))
 
     def get_formatted_end_time(self) -> str:
         """

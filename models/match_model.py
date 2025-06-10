@@ -45,22 +45,21 @@ class Match:
 
     def __repr__(self) -> str:
         """
-        Retourne une représentation textuelle concise du match,
-        utile pour le débogage et les logs.
+        Représentation textuelle concise du match pour le débogage et les logs.
         Affiche "Repos" et score pour un bye, ou deux lignes pour un match classique.
         """
         if self.player_2 is None:
-            return f"{self.player_1.first_name} {self.player_1.last_name} – Repos : {self.match_score_1} point(s)"
+            return (
+                f"{self.player_1.first_name} {self.player_1.last_name} – "
+                f"Repos : {self.match_score_1} point(s)"
+            )
+
         return (
-            f"{
-                self.player_1.first_name} {
-                self.player_1.last_name} [{
-                self.color_player_1}] : {
-                    self.match_score_1} point(s)\n" f"{
-                        self.player_2.first_name} {
-                            self.player_2.last_name} [{
-                                self.color_player_2}] : {
-                                    self.match_score_2} point(s)")
+            f"{self.player_1.first_name} {self.player_1.last_name} "
+            f"[{self.color_player_1}] : {self.match_score_1} point(s)\n"
+            f"{self.player_2.first_name} {self.player_2.last_name} "
+            f"[{self.color_player_2}] : {self.match_score_2} point(s)"
+            )
 
     def assign_color(self) -> None:
         """

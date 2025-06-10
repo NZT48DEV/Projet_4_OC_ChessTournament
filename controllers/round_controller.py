@@ -1,4 +1,4 @@
-from config import TOURNAMENTS_FOLDER, ENTER_FOR_MAIN_MENU
+from config import TOURNAMENTS_FOLDER, ENTER_FOR_MAIN_MENU, ENTER_FOR_CONTINUE
 from controllers.match_controller import MatchController
 from storage.tournament_data import save_tournament_to_json
 from models.match_model import Match
@@ -89,6 +89,8 @@ class RoundController:
                 self._execute_match(match, rnd, rnd_num)
 
             self._finalize_round(rnd)
+            print()
+            wait_for_enter(ENTER_FOR_CONTINUE)
 
         TournamentView.show_tournament_summary(self.tournament)
         wait_for_enter(ENTER_FOR_MAIN_MENU)

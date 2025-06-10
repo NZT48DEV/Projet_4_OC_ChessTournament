@@ -11,21 +11,29 @@ ChessTournament/
 ├── __init__.py
 ├── config.py                 # Configuration globale (fichiers, constantes)
 ├── main.py                   # Point d’entrée de l’application
-├── requirements.txt                   
 ├── README.md
+├── requirements.txt                   
 ├── setup.cfg                
 ├── controllers/              # Logique métier (CRUD, appariements, gestion de tournois)
 │   ├── __init__.py
+│   ├── match_controller.py
 │   ├── player_controller.py
-│   ├── tournament_controller.py
 │   ├── round_controller.py
-│   └── match_controller.py
+│   └── tournament_controller.py
+├── data/                     # Dossiers de stockage JSON/CSV 
+│   ├── players/              # Fichiers individuels de joueurs
+│   └── tournaments/          # Fichiers individuels de tournois
+├── flake8_rapport/ 
+│   ├── back.svg
+│   ├── file.svg
+│   ├── index.html
+│   └── style.css 
 ├── models/                   # Définition des objets métier
 │   ├── __init__.py
+│   ├── match_model.py
 │   ├── player_model.py
-│   ├── tournament_model.py
 │   ├── round_model.py
-│   └── match_model.py
+│   └── tournament_model.py
 ├── storage/                  # Lecture/écriture des données persistées
 │   ├── __init__.py
 │   ├── player_data.py
@@ -34,28 +42,21 @@ ChessTournament/
 │   ├── __init__.py
 │   ├── console.py
 │   ├── date_helpers.py
-│   ├── input_manager.py
-│   ├── input_formatters.py
-│   ├── input_validators.py
-│   ├── update_ranks.py
 │   ├── error_messages.py
-│   └── info_messages.py
-├── views/                    # Affichage et menus CLI
-│   ├── __init__.py
-│   ├── main_menu.py
-│   ├── player_view.py
-│   ├── tournament_view.py
-│   ├── round_view.py
-│   ├── match_view.py
-│   └── reports_view.py
-├── flake8_rapport/ 
-│   ├── back.svg
-│   ├── file.svg
-│   ├── index.html
-│   └── style.css  
-└── data/                     # Dossiers de stockage JSON/CSV
-    ├── players/              # Fichiers individuels de joueurs
-    └── tournaments/          # Fichiers individuels de tournois
+│   ├── info_messages.py
+│   ├── input_formatters.py
+│   ├── input_manager.py
+│   ├── input_validators.py
+│   ├── ui_helpers.py
+│   └── update_ranks.py
+└── Views/                   # Affichage et menus CLI
+    ├── __init__.py
+    ├── main_menu.py
+    ├── match_view.py
+    ├── player_view.py
+    ├── reports_view.py
+    ├── round_view.py
+    └── tournament_view.py
                        
 ```
 

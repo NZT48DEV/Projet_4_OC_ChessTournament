@@ -13,7 +13,8 @@ from utils.input_validators import (
     is_valid_id_national_chess,
 )
 from utils.error_messages import (
-    invalid_name,
+    invalid_first_name,
+    invalid_last_name,
     invalid_date_of_birth,
     invalid_id_national_chess,
 )
@@ -27,6 +28,12 @@ from utils.info_messages import (
     player_added_to_chesstournament_text,
     player_already_in_tournament_text
 )
+from utils.ui_helpers import (
+    show_id_national_chess,
+    show_first_name,
+    show_last_name,
+    show_date_of_birth
+)
 from utils.console import clear_screen
 from utils.input_manager import get_valid_input
 
@@ -39,12 +46,10 @@ class PlayerView:
     Vues CLI pour la création incrémentale d'un joueur.
     """
 
+
     @staticmethod
     def ask_id_national_chess() -> str:
-        clear_screen()
-        print("\n" + "=" * 40)
-        print("🆔        IDENTIFIANT NATIONAL        🆔")
-        print("=" * 40)
+        show_id_national_chess()
         return get_valid_input(
             prompt="Votre IDN d'échecs (XX00000) : ",
             formatter=format_id_national_chess,
@@ -54,36 +59,27 @@ class PlayerView:
 
     @staticmethod
     def ask_first_name() -> str:
-        clear_screen()
-        print("\n" + "=" * 40)
-        print("👤          PRÉNOM DU JOUEUR          👤")
-        print("=" * 40)
+        show_first_name()
         return get_valid_input(
             prompt="Prénom : ",
             formatter=format_first_name,
             validator=is_valid_name,
-            message_error=invalid_name,
+            message_error=invalid_first_name,
         )
 
     @staticmethod
     def ask_last_name() -> str:
-        clear_screen()
-        print("\n" + "=" * 40)
-        print("👤            NOM DU JOUEUR           👤")
-        print("=" * 40)
+        show_last_name()
         return get_valid_input(
             prompt="Nom : ",
             formatter=format_name,
             validator=is_valid_name,
-            message_error=invalid_name,
+            message_error=invalid_last_name,
         )
 
     @staticmethod
     def ask_date_of_birth() -> str:
-        clear_screen()
-        print("\n" + "=" * 40)
-        print("🎂          DATE DE NAISSANCE         🎂")
-        print("=" * 40)
+        show_date_of_birth()
         return get_valid_input(
             prompt="Date de naissance (JJMMAAAA) : ",
             formatter=format_date,
@@ -163,3 +159,5 @@ class PlayerView:
         Affiche “le joueur est déjà inscrit dans ce tournoi”.
         """
         console.print(player_already_in_tournament_text(id_national))
+
+    

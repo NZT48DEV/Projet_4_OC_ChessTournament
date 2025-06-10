@@ -2,7 +2,6 @@ import re
 
 from config import MIN_PLAYER_AGE, MIN_ROUND, MAX_ROUND, MAX_DESCRIPTION_LENGTH
 from utils.date_helpers import get_today
-from utils.error_messages import invalid_min_player_age
 from utils.input_formatters import parse_raw_date
 
 
@@ -56,7 +55,6 @@ def is_valid_player_birthdate(date_str: str | None) -> bool:
 
     age = (today - birth_date).days // 365
     if age < MIN_PLAYER_AGE:
-        invalid_min_player_age()
         return False
 
     return True

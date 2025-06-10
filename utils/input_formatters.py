@@ -1,4 +1,10 @@
-from config import DATE_STORAGE_FORMAT, MAX_NAME_LENGTH, DEFAULT_NUMBER_OF_ROUND
+from config import (
+    DATE_STORAGE_FORMAT,  
+    DEFAULT_NUMBER_OF_ROUND,
+    MAX_FIRST_NAME_LENGTH,
+    MAX_LAST_NAME_LENGTH,
+    MAX_TOURNAMENT_NAME_LENGTH
+)
 from utils.date_helpers import parse_raw_date
 from utils.error_messages import invalid_number_of_rounds
 
@@ -19,7 +25,7 @@ def format_name(last_name: str) -> str:
         str: Le nom formaté
     """
     last_name = last_name.strip().upper()
-    if len(last_name) > MAX_NAME_LENGTH:
+    if len(last_name) > MAX_LAST_NAME_LENGTH:
         return None
     return last_name
 
@@ -27,7 +33,7 @@ def format_name(last_name: str) -> str:
 def format_first_name(first_name: str) -> str:
 
     first_name = first_name.strip().capitalize()
-    if len(first_name) > MAX_NAME_LENGTH:
+    if len(first_name) > MAX_FIRST_NAME_LENGTH:
         return None
     return first_name
 
@@ -42,10 +48,10 @@ def format_tournament_name(tournament_name: str) -> str:
     Args:
         tournament_name(str): Le nom du tournoi à formatter
     """
-    tournament_name = tournament_name.strip().upper()[:MAX_NAME_LENGTH]
+    tournament_name = tournament_name.strip().upper()[:MAX_TOURNAMENT_NAME_LENGTH]
 
     if tournament_name.isdigit():
-        return f"TOURNOI {tournament_name[:MAX_NAME_LENGTH]}"
+        return f"TOURNOI {tournament_name[:MAX_TOURNAMENT_NAME_LENGTH]}"
     return tournament_name
 
 

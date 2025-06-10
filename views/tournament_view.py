@@ -18,7 +18,8 @@ from utils.input_formatters import (format_tournament_name,
                                     format_description,
                                     format_id_national_chess,)
 from utils.error_messages import (invalid_tournament_name,
-                                  invalid_tournament_date,
+                                  invalid_tournament_start_date,
+                                  invalid_tournament_end_date,
                                   invalid_location_name,
                                   invalid_number_of_rounds,
                                   invalid_description,
@@ -33,6 +34,14 @@ from utils.input_validators import (is_valid_tournament_name,
                                     is_valid_number_of_rounds,
                                     is_valid_description,
                                     is_valid_id_national_chess)
+from utils.ui_helpers import (
+    show_tournament_name,
+    show_location,
+    show_start_date,
+    show_end_date,
+    show_number_of_rounds,
+    show_description
+)
 
 
 console = Console()
@@ -41,10 +50,7 @@ console = Console()
 class TournamentView:
     @staticmethod
     def ask_tournament_name() -> str:
-        clear_screen()
-        print("\n" + "=" * 40)
-        print("🏆           NOM DU TOURNOI           🏆")
-        print("=" * 40)
+        show_tournament_name()
         return get_valid_input(
             prompt="Nom du tournoi : ",
             formatter=format_tournament_name,
@@ -54,10 +60,7 @@ class TournamentView:
 
     @staticmethod
     def ask_location() -> str:
-        clear_screen()
-        print("\n" + "=" * 40)
-        print("📍          LIEU DU TOURNOI           📍")
-        print("=" * 40)
+        show_location()
         return get_valid_input(
             prompt="Lieu : ",
             formatter=format_location_name,
@@ -67,36 +70,27 @@ class TournamentView:
 
     @staticmethod
     def ask_start_date() -> str:
-        clear_screen()
-        print("\n" + "=" * 40)
-        print("📅            DATE DE DÉBUT           📅")
-        print("=" * 40)
+        show_start_date()
         return get_valid_input(
             prompt="Date de début (JJMMAAAA) : ",
             formatter=format_date,
             validator=is_valid_start_date,
-            message_error=invalid_tournament_date,
+            message_error=invalid_tournament_start_date,
         )
 
     @staticmethod
     def ask_end_date(start_date: str) -> str:
-        clear_screen()
-        print("\n" + "=" * 40)
-        print("📅            DATE DE FIN             📅")
-        print("=" * 40)
+        show_end_date()
         return get_valid_input(
             prompt="Date de fin (JJMMAAAA) : ",
             formatter=format_date,
             validator=lambda end_date: is_valid_end_date(end_date, start_date),
-            message_error=invalid_tournament_date,
+            message_error=invalid_tournament_end_date,
         )
 
     @staticmethod
     def ask_number_of_rounds() -> int:
-        clear_screen()
-        print("\n" + "=" * 40)
-        print("🔢           NOMBRE DE ROUNDS         🔢")
-        print("=" * 40)
+        show_number_of_rounds()
         return get_valid_input(
             prompt=f"Nombre de rounds (par défaut {DEFAULT_NUMBER_OF_ROUND}) : ",
             formatter=format_number_of_rounds,
@@ -106,10 +100,7 @@ class TournamentView:
 
     @staticmethod
     def ask_description(allow_empty: bool = False) -> str:
-        clear_screen()
-        print("\n" + "=" * 40)
-        print("📝             DESCRIPTION            📝")
-        print("=" * 40)
+        show_description()
 
         if allow_empty:
             # Simple prompt, on récupère la saisie brute et on la retourne (peut être chaîne vide)

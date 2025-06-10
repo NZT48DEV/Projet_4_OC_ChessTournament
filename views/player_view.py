@@ -149,6 +149,7 @@ class PlayerView:
         """
         clear_screen()
         console.print(player_incomplete_text())
+        console.print(player_info_text(player))
 
     @staticmethod
     def display_player_info(player: Player) -> None:

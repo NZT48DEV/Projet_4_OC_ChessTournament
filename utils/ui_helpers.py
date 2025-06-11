@@ -72,6 +72,7 @@ def show_description() -> str:
 
 
 def show_tournament_information() -> str:
+    clear_screen()
     print("\n" + "=" * 40)
     print("🏆       INFORMATIONS DU TOURNOI      🏆")
     print("=" * 40 + "\n")

@@ -308,9 +308,9 @@ class TournamentController:
             except FileNotFoundError:
                 player = Player(
                     id_national_chess=idn,
-                    first_name="",
-                    last_name="",
-                    date_of_birth=p_data.get("date_of_birth", ""),
+                    first_name=None,
+                    last_name=None,
+                    date_of_birth=p_data.get("date_of_birth", None),
                     tournament_score=p_data.get("tournament_score", 0.0),
                     rank=p_data.get("rank", 0),
                     played_with=p_data.get("played_with", []),

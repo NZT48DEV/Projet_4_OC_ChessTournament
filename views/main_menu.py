@@ -25,7 +25,7 @@ class MenuView:
         print("\n" + "=" * 40)
         print("♟️       TOURNOI D'ÉCHECS - MENU       ♟️")
         print("=" * 40)
-        print("1. ♟️ Créer un joueur")
+        print("1. ♟️  Créer un joueur")
         print("2. 🏆 Créer un tournoi")
         print("3. 📂 Charger un tournoi")
         print("4. 📊 Afficher des rapports")

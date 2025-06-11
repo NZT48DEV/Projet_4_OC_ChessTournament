@@ -4,6 +4,7 @@ data/
 # Fichier spécifique
 TODO.md
 *.pptx
+*.pdf
 
 # Ignore les fichiers Python compilés
 __pycache__/

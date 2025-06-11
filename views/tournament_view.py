@@ -169,7 +169,6 @@ class TournamentView:
 
         # 4. Charger/créer/completer le profil via le controller
         player = PlayerController.create_player_with_id(id_input)
-        wait_for_enter(ENTER_FOR_CONTINUE)
 
         # 5. Retourner le Player complet
         return player

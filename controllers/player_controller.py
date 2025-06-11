@@ -63,6 +63,7 @@ class PlayerController:
                         player, ["first_name", "last_name", "date_of_birth"]
                     )
                     PlayerView.display_player_updated(player)
+                    wait_for_enter(ENTER_FOR_CONTINUE)
 
             return player
 
@@ -85,6 +86,7 @@ class PlayerController:
                 player, ["first_name", "last_name", "date_of_birth"]
             )
             PlayerView.display_player_added(player)
+            wait_for_enter(ENTER_FOR_CONTINUE)
             return player
 
     @staticmethod

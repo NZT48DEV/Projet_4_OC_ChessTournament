@@ -183,25 +183,36 @@ def is_valid_number_of_rounds(number: int) -> bool:
     return MIN_ROUND <= number <= MAX_ROUND
 
 
-def is_valid_description(description: str) -> bool:
+def make_description_validator(allow_empty: bool = False):
     """
-    Valide la description d'un tournoi.
+    Fabrique une fonction de validation pour les descriptions de tournoi.
 
-    Critères :
-      - Chaîne optionnelle (vide autorisé)
-      - Longueur ≤ MAX_DESCRIPTION_LENGTH
+    Permet d'adapter dynamiquement la validation selon que la description
+    soit optionnelle ou obligatoire.
+
+    Critères appliqués :
+      - Si `allow_empty` est False, la chaîne ne doit pas être vide.
+      - Dans tous les cas, la longueur (après .strip()) doit être ≤ MAX_DESCRIPTION_LENGTH.
 
     Args:
-        description (str): Texte de description saisi.
+        allow_empty (bool): Si True, accepte une description vide. Sinon, elle est requise.
 
     Returns:
-        bool: True si la description est vide ou de longueur acceptable, False sinon.
+        Callable[[str], bool]: Fonction de validation à utiliser dans get_valid_input().
     """
-    if not isinstance(description, str):
-        return False
+    def validator(description: str) -> bool:
+        if not isinstance(description, str):
+            return False
 
-    cleaned_description = description.strip()
-    return len(cleaned_description) == 0 or len(cleaned_description) <= MAX_DESCRIPTION_LENGTH
+        cleaned_description = description.strip()
+
+        if not allow_empty and len(cleaned_description) == 0:
+            return False
+
+        return len(cleaned_description) <= MAX_DESCRIPTION_LENGTH
+
+    return validator
+
 
 
 def is_valid_yes_no(value: str) -> bool:

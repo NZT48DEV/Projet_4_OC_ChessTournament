@@ -32,7 +32,7 @@ from utils.input_validators import (is_valid_tournament_name,
                                     is_valid_end_date,
                                     is_valid_location_name,
                                     is_valid_number_of_rounds,
-                                    is_valid_description,
+                                    make_description_validator,
                                     is_valid_id_national_chess)
 from utils.ui_helpers import (
     show_tournament_name,
@@ -104,16 +104,10 @@ class TournamentView:
     def ask_description(allow_empty: bool = False) -> str:
         show_description()
 
-        if allow_empty:
-            # Simple prompt, on récupère la saisie brute et on la retourne (peut être chaîne vide)
-            desc = input("Description/Remarques (optionnel) : ").strip()
-            return desc
-
-        # Si allow_empty == False, on réutilise get_valid_input pour forcer une saisie valide
         return get_valid_input(
             prompt="Description/Remarques : ",
             formatter=format_description,
-            validator=is_valid_description,
+            validator=make_description_validator(allow_empty),
             message_error=invalid_description,
         )
 

@@ -39,8 +39,8 @@ def invalid_first_name():
     console.print(
         "\n[b red][ERREUR][/b red] Le prénom est [b]invalide.[/b]\n"
         "Il doit contenir [b]uniquement des lettres[/b]\n"
-        f"et avoir [b]au minimum {MIN_FIRST_NAME_LENGTH} caractères,[/b]"
-        f" et au maximum [b]{MAX_FIRST_NAME_LENGTH} caractères.[/b]\n"
+        f"et avoir [b]au minimum {MIN_FIRST_NAME_LENGTH} caractères,\n[/b]"
+        f"et au maximum [b]{MAX_FIRST_NAME_LENGTH} caractères.[/b]\n"
     )
 
 
@@ -49,8 +49,8 @@ def invalid_last_name():
     console.print(
         "\n[b red][ERREUR][/b red] Le nom est [b]invalide.[/b]\n"
         "Il doit contenir [b]uniquement des lettres[/b]\n"
-        f"et avoir [b]au minimum {MIN_LAST_NAME_LENGTH} caractères,[/b]"
-        f" et au maximum [b]{MAX_LAST_NAME_LENGTH} caractères.[/b]\n"
+        f"et avoir [b]au minimum {MIN_LAST_NAME_LENGTH} caractères,\n[/b]"
+        f"et au maximum [b]{MAX_LAST_NAME_LENGTH} caractères.[/b]\n"
     )
 
 

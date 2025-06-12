@@ -218,7 +218,6 @@ def make_description_validator(allow_empty: bool = False):
     return validator
 
 
-
 def is_valid_yes_no(value: str) -> bool:
     """
     Vérifie qu'une réponse formatée est soit "Y", soit "N".

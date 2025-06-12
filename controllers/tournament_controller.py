@@ -168,7 +168,14 @@ class TournamentController:
                 validator=is_valid_yes_no,
                 message_error=invalid_yes_no,
             )
-            if choix != "Y":
+            if count < 2:
+                clear_screen()
+                TournamentView.show_error(
+                    f"Pas assez de joueurs pour démarrer le tournoi (minimum : {MIN_PLAYERS} joueur(s)).\n"
+                    f"Veuillez ajouter au minimum {MIN_PLAYERS - count} joueur(s).")
+                print()
+                wait_for_enter(ENTER_FOR_CONTINUE)
+            elif choix != "Y":
                 break
 
             clear_screen()
@@ -201,7 +208,7 @@ class TournamentController:
 
     def _ask_to_start(self) -> bool:
         """
-        Affiche la liste des joueurs et demande si l’on démarre le tournoi.
+        Demande si l’on démarre le tournoi.
 
         Returns:
             True si l’utilisateur répond 'Y', False sinon.
@@ -223,7 +230,10 @@ class TournamentController:
             RoundController(self.tournament, self.filename).run()
         else:
             clear_screen()
-            print("Le tournoi est interrompu, pas assez de joueurs inscrits.")
+            TournamentView.show_error(
+                "Pas assez de joueurs pour démarrer le tournoi"
+                f" (minimum : {MIN_PLAYERS} joueur(s)).")
+            wait_for_enter(ENTER_FOR_MAIN_MENU)
 
     @staticmethod
     def load_existing_tournament(data: dict, filename: str) -> TournamentController:

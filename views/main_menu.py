@@ -10,15 +10,13 @@ from utils.info_messages import prompt_file_to_load
 from views.reports_view import ReportsView
 
 
-console = Console()
-
-
 class MenuView:
     """
     Vue principale pour afficher le menu et naviguer
     entre la création de joueurs, la gestion de tournois
     et l’affichage des rapports.
     """
+    console = Console()
 
     def display_main_menu(self) -> None:
         """Affiche le menu principal."""
@@ -127,7 +125,7 @@ class MenuView:
         print("\nFichiers de tournois disponibles :\n")
         for filename in files:
             print(f"  • {filename}")
-        console.print(prompt_file_to_load())
+        MenuView.console.print(prompt_file_to_load())
 
         file_choice = input("Nom du fichier à charger → ").strip()
         if not file_choice:

@@ -1,11 +1,11 @@
-from config import TOURNAMENTS_FOLDER, ENTER_FOR_MAIN_MENU, ENTER_FOR_CONTINUE
+from config import TOURNAMENTS_FOLDER, ENTER_FOR_MAIN_MENU, ENTER_FOR_CONTINUE, MIN_PLAYERS
 from controllers.match_controller import MatchController
 from storage.tournament_data import save_tournament_to_json
 from models.match_model import Match
 from models.player_model import Player
 from models.round_model import Round
 from models.tournament_model import Tournament
-from utils.console import wait_for_enter
+from utils.console import wait_for_enter, clear_screen
 from views.round_view import RoundView
 from views.tournament_view import TournamentView
 
@@ -30,7 +30,10 @@ class RoundController:
         Démarre la séquence de rounds depuis le premier.
         """
         if len(self.players) < 2:
-            RoundView.show_error("Pas assez de joueurs pour démarrer le tournoi.")
+            clear_screen()
+            RoundView.show_error(f"Pas assez de joueurs pour démarrer le tournoi (minimum : {MIN_PLAYERS} joueur(s)).")
+            print()
+            wait_for_enter(ENTER_FOR_MAIN_MENU)
             return
         self.start_from_round(1)
 
@@ -38,10 +41,6 @@ class RoundController:
         """
         Exécute tous les rounds du tournoi à partir du numéro indiqué.
         """
-        if len(self.players) < 2:
-            RoundView.show_error("Pas assez de joueurs pour démarrer le tournoi.")
-            return
-
         for rnd_num in range(starting_round, self.num_rounds + 1):
             rnd = self._get_or_create_round(rnd_num)
 

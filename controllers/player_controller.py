@@ -47,6 +47,7 @@ class PlayerController:
                 wait_for_enter(ENTER_FOR_CONTINUE)
                 PlayerController._complete_fields(player, missing)
                 PlayerView.display_player_updated(player)
+                wait_for_enter(ENTER_FOR_CONTINUE)
 
             elif prompt_modify:
                 PlayerView.display_player_already_exist(player)

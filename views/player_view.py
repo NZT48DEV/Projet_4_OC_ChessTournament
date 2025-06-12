@@ -38,13 +38,11 @@ from utils.console import clear_screen
 from utils.input_manager import get_valid_input
 
 
-console = Console()
-
-
 class PlayerView:
     """
     Vues CLI pour la création incrémentale d'un joueur.
     """
+    console = Console()
 
     @staticmethod
     def ask_id_national_chess() -> str:
@@ -112,8 +110,8 @@ class PlayerView:
             player (Player): L'instance du joueur qui a été créé.
         """
         clear_screen()
-        console.print(player_added_text())
-        console.print(player_info_text(player))
+        PlayerView.console.print(player_added_text())
+        PlayerView.console.print(player_info_text(player))
 
     @staticmethod
     def display_player_updated(player: Player) -> None:
@@ -124,8 +122,8 @@ class PlayerView:
             player (Player): L'instance du joueur dont le profil a été mis à jour.
         """
         clear_screen()
-        console.print(player_updated_text())
-        console.print(player_info_text(player))
+        PlayerView.console.print(player_updated_text())
+        PlayerView.console.print(player_info_text(player))
 
     @staticmethod
     def display_player_already_exist(player: Player) -> None:
@@ -136,8 +134,8 @@ class PlayerView:
             player (Player): L'instance du joueur déjà existant.
         """
         clear_screen()
-        console.print(player_already_exist_text())
-        console.print(player_info_text(player))
+        PlayerView.console.print(player_already_exist_text())
+        PlayerView.console.print(player_info_text(player))
 
     @staticmethod
     def display_player_incomplete(player: Player) -> None:
@@ -148,8 +146,8 @@ class PlayerView:
             player (Player): L'instance du joueur dont le profil est incomplet.
         """
         clear_screen()
-        console.print(player_incomplete_text())
-        console.print(player_info_text(player))
+        PlayerView.console.print(player_incomplete_text())
+        PlayerView.console.print(player_info_text(player))
 
     @staticmethod
     def display_player_info(player: Player) -> None:
@@ -159,7 +157,7 @@ class PlayerView:
         Args:
             player (Player): L'instance du joueur dont on veut afficher les détails.
         """
-        console.print(player_info_text(player))
+        PlayerView.console.print(player_info_text(player))
 
     @staticmethod
     def display_nonexistent_player(player: Player) -> None:
@@ -170,7 +168,7 @@ class PlayerView:
             player (Player): L'instance du joueur recherché (inexistante).
         """
         clear_screen()
-        console.print(player_nonexistent_text(player))
+        PlayerView.console.print(player_nonexistent_text(player))
 
     @staticmethod
     def display_player_added_to_chesstournament_text(player: Player) -> None:
@@ -180,7 +178,7 @@ class PlayerView:
         Args:
             player (Player): L'instance du joueur ajouté au tournoi.
         """
-        console.print(player_added_to_chesstournament_text(player))
+        PlayerView.console.print(player_added_to_chesstournament_text(player))
 
     @staticmethod
     def display_duplicate_player(id_national: str) -> None:
@@ -190,4 +188,4 @@ class PlayerView:
         Args:
             id_national (str): Identifiant national du joueur dupliqué.
         """
-        console.print(player_already_in_tournament_text(id_national))
+        PlayerView.console.print(player_already_in_tournament_text(id_national))

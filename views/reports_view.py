@@ -12,10 +12,9 @@ from utils.ui_helpers import show_tournament_information
 from views.tournament_view import TournamentView
 
 
-console = Console()
-
-
 class ReportsView:
+    console = Console()
+
     @staticmethod
     def list_all_players():
         clear_screen()
@@ -69,7 +68,7 @@ class ReportsView:
         print("\nFichiers de tournois disponibles :\n")
         for filename in files:
             print(f"  • {filename}")
-        console.print(prompt_file_to_load())
+        ReportsView.console.print(prompt_file_to_load())
         choice = input("Nom du fichier à charger → ").strip()
         if not choice:
             clear_screen()

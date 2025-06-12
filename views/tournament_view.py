@@ -46,10 +46,9 @@ from utils.ui_helpers import (
 )
 
 
-console = Console()
-
-
 class TournamentView:
+    console = Console()
+
     @staticmethod
     def ask_tournament_name() -> str:
         show_tournament_name()
@@ -175,15 +174,15 @@ class TournamentView:
 
     @staticmethod
     def display_player_already_in_tournament_text(id_national: str):
-        console.print(player_already_in_tournament_text(id_national))
+        TournamentView.console.print(player_already_in_tournament_text(id_national))
 
     @staticmethod
     def display_tournament_incomplete(tournament: Tournament) -> None:
         """
         Efface l'écran et affiche le message pour informer que le profil du joueur est incomplet.
         """
-        console.print(tournament_incomplete_text())
-        console.print(tournament_info_text(tournament))
+        TournamentView.console.print(tournament_incomplete_text())
+        TournamentView.console.print(tournament_info_text(tournament))
 
     @staticmethod
     def show_tournament_summary(tournament: Tournament) -> None:
@@ -346,3 +345,7 @@ class TournamentView:
 
         console.print()
         console.print("[bold green]»» Résumé du tournoi affiché.[/bold green]\n")
+
+    @staticmethod
+    def show_error(message: str) -> None:
+        TournamentView.console.print(f"[bold red]Erreur:[/bold red] {message}")

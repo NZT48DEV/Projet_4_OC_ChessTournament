@@ -79,7 +79,11 @@ def is_valid_tournament_name(tournament_name: str) -> bool:
     """
     Vérifie qu'un nom de tournoi est valide.
 
-    Autorise lettres (A–Z, a–z), chiffres, espaces, tirets et apostrophes.
+    Autorise :
+    - Lettres (y compris lettres accentuées),
+    - Chiffres,
+    - Espaces,
+    - Tirets et apostrophes.
 
     Args:
         tournament_name (str): Nom saisi par l'utilisateur.
@@ -87,7 +91,7 @@ def is_valid_tournament_name(tournament_name: str) -> bool:
     Returns:
         bool: True si le nom est conforme, False sinon.
     """
-    return bool(re.fullmatch(r"[A-Za-z0-9\-' ]+", tournament_name))
+    return bool(re.fullmatch(r"[A-Za-zÀ-Öø-ÿ0-9\s\-']+", tournament_name))
 
 
 def is_valid_start_date(date_str: str | None) -> bool:

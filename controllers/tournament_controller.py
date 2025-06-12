@@ -386,6 +386,8 @@ class TournamentController:
             if not t.list_of_players:
                 self._register_players_phase1()
                 self._register_players_phase2()
+                if not self._ask_to_start():
+                    return
             else:
                 clear_screen()
                 self._register_players_phase2()

@@ -1,0 +1,79 @@
+Ajout des joueurs
+
+Ajout d'un joueur complet
+Ajout d'un joueur incomplet
+Ajout d'un joueur inexistant
+Ajout d'un dernier joueur complet
+
+Montrez le fichier .json au fur et a mesure qu'on rajoute les joueurs
+
+Démarrer le tournoi : NO
+
+Rechargement du tournoi 
+
+Imaginons il y a eu une erreur, j'ai mis que je voulais pas rajouter de joueur alors que si
+Quand je recharge le tournoi, il me redemande si je veux rajouter des joueurs avant de me reposer la question si oui ou non je veux démarrer le tournoi.
+
+Quand je démarre le tournoi
+J'initialise la ronde (run)
+
+D'abord je regarde si mon tournoi a déjà des rondes et des matchs présents, sinon je démarre le round 1 -> start_from_round / _get_or_create_round / make_round
+Je lui associe l'heure du début du round -> start_round()
+Puis je vais générer les paires de joueurs -> generate_pairings()
+Dans la génération des paires, j'ai fait un petit extra que je ne vais pas forcément présenter en détail mais le programme gère automatiquement si on a un nombre de joueur impair. _create_bye()
+Sinon il va simplement prendre tous les joueurs de la list_of_players et grâce a _build_shuffled_pool()
+On va classer les joueurs par score décroissant
+Puis on mélange aléatoirement les joueurs ayant le même score.
+On va retourner une liste finale de joueurs triés (pool) où :
+- Les meilleurs scores sont en haut
+- Les ex-aequo sont dans un ordre mélangé.
+Ici on commence avec tous les joueurs a tournament_score = 0.0, donc ils sont tous ex-aequo et ils seront tous mélangés.
+
+
+Grâce à cette liste finale de joueur triés (pool) on va pouvoir créer nos paires de joueurs via la méthode _pair_players()
+En évitant les revanche (rematch) dans un premier temps,
+Puis en forçant des rematchs si nécessaire.
+paired c'est l'ensemble des joueurs déjà appariés dans ce round
+unpaired c'est les joueurs qui n'ont pas trouvé de partenaire dans la première passe.
+
+Première passe (sans rematch)
+on parcourt chaque joueur p1, si p1 a déjà été apparié, on le saute.
+Pour chaque joueur p2, on évite ceux déjà appariés et on évite aussi p1 lui-même
+Si p1 a déjà affronté p2 dans un round précédent,
+on évite un rematch → on saute.
+Si on trouve un p2 valide :
+On les marque comme appariés (paired.update)
+On met à jour leurs historiques (played_with)
+On crée et ajoute un match avec étiquette "match" pour le round actuel
+On sort de la boucle for p2
+Si on n’a trouvé aucun adversaire pour p1,
+on le met dans unpaired pour la deuxième passe.
+
+Deuxième passe (avec rematch)
+Tant qu’il y a au moins 2 joueurs non appariés, on en prend un (p1)…
+→ On essaie de trouver un partenaire p2 que p1 n’a jamais affronté.
+→ Sinon, on force un rematch avec le premier joueur de la liste.
+→ On :
+créer la paire
+met à jour leurs historiques,
+crée et ajoute un match avec étiquette "Rematch" pour le round actuel
+
+Pour chaque match du round 
+On va assigner les couleurs associés au joueur pour leur match.
+Et on va créer un snapshot par joueur pour son match
+Ensuite on vérifie si le match a déjà été complété via is_match_completed()
+Sinon on éxécute le match via _execute_match()
+
+Avant le début du match, on va faire une mise a jour des classements et un snapshot
+On va ensuite déterminer le résultat via l'input utilisateur
+Appliquer les scores et ajuster les classements, reprendre un snapshot
+On va ensuite finaliser les matchs avec l'affichage des résultats + une sauvegarde
+On va recalculer le classement du tournoi associé dans la liste des joueurs
+On va resfresh les snapshots sur toute la ronde
+Et on va effectuer une sauvegarde finale
+
+On aura donc un classement adapté affiché pour chaque round et un classement principal du tournament via la list des joueurs.
+
+Rapidement pour finir, je vous montre les rapports qu'on peut générer via l'option 4
+
+

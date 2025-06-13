@@ -18,38 +18,11 @@ class MatchView:
         Affiche le panneau “MATCH” et la table des choix,
         puis lit et renvoie 1, 2 ou 3 (3 pour égalité).
         """
-        p1, p2 = match.player_1, match.player_2
-
-        titre = Text()
-        titre.append(f"{p1.first_name} {p1.last_name} ({p1.id_national_chess})", style="bold yellow")
-        titre.append(f" ({match.color_player_1}) ", style="white")
-        titre.append("⚔️   ")
-        titre.append(f"{p2.first_name} {p2.last_name} ({p2.id_national_chess})", style="bold yellow")
-        titre.append(f" ({match.color_player_2})", style="white")
-        panel_title = Panel(
-            titre,
-            title="[bold magenta]MATCH[/bold magenta]",
-            border_style="magenta",
-            box=ROUNDED,
-            expand=False,
-            padding=(0, 1)
-        )
-
-        # Table de choix
-        choix_table = Table(show_header=False, box=SIMPLE, expand=False, padding=(0, 1))
-        choix_table.add_column("C", justify="center", no_wrap=True, width=3)
-        choix_table.add_column("Candidat", justify="left")
-        choix_table.add_row("[bold green]1[/bold green]",
-                            f"{p1.first_name} {p1.last_name} ({p1.id_national_chess}) ({match.color_player_1})")
-        choix_table.add_row("[bold red]2[/bold red]",
-                            f"{p2.first_name} {p2.last_name} ({p2.id_national_chess}) ({match.color_player_2})")
-        choix_table.add_row("[bold yellow]3[/bold yellow]", "Égalité")
-
-        MatchView.console.print(panel_title)
+        MatchView.console.print(MatchView._build_match_panel(match))
         MatchView.console.print()
         MatchView.console.print(Text("Qui gagne ?", style="bold white", justify="center"))
         MatchView.console.print()
-        MatchView.console.print(choix_table)
+        MatchView.console.print(MatchView._build_choice_table(match))
         MatchView.console.print()
 
         while True:
@@ -58,6 +31,47 @@ class MatchView:
                 return int(choice)
             MatchView.console.print("[bold red]Entrée invalide, tapez 1, 2 ou 3.[/bold red]")
             MatchView.console.print()
+
+    @staticmethod
+    def _build_match_panel(match: Match) -> Panel:
+        """
+        Construit et renvoie le panneau d’en-tête du match avec les noms, couleurs, etc.
+        """
+        p1, p2 = match.player_1, match.player_2
+        titre = Text()
+        titre.append(f"{p1.first_name} {p1.last_name} ({p1.id_national_chess})", style="bold yellow")
+        titre.append(f" ({match.color_player_1}) ", style="white")
+        titre.append("⚔️   ")
+        titre.append(f"{p2.first_name} {p2.last_name} ({p2.id_national_chess})", style="bold yellow")
+        titre.append(f" ({match.color_player_2})", style="white")
+        return Panel(
+            titre,
+            title="[bold magenta]MATCH[/bold magenta]",
+            border_style="magenta",
+            box=ROUNDED,
+            expand=False,
+            padding=(0, 1)
+        )
+
+    @staticmethod
+    def _build_choice_table(match: Match) -> Table:
+        """
+        Construit et renvoie la table de choix pour les résultats du match.
+        """
+        p1, p2 = match.player_1, match.player_2
+        table = Table(show_header=False, box=SIMPLE, expand=False, padding=(0, 1))
+        table.add_column("C", justify="center", no_wrap=True, width=3)
+        table.add_column("Candidat", justify="left")
+        table.add_row(
+            "[bold green]1[/bold green]",
+            f"{p1.first_name} {p1.last_name} ({p1.id_national_chess}) ({match.color_player_1})"
+            )
+        table.add_row(
+            "[bold red]2[/bold red]",
+            f"{p2.first_name} {p2.last_name} ({p2.id_national_chess}) ({match.color_player_2})"
+            )
+        table.add_row("[bold yellow]3[/bold yellow]", "Égalité")
+        return table
 
     @staticmethod
     def format_result(match: Match) -> Text:

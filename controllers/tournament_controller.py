@@ -1,7 +1,6 @@
 from __future__ import annotations
 import os
 import datetime
-from typing import Any, Dict, List
 
 from config import (
     TODAY,
@@ -158,7 +157,8 @@ class TournamentController:
             TournamentView.show_player_list_header(players)
             count = len(players)
             if count >= limit:
-                print(f"\nNombre maximal de joueurs atteint ({limit}).")
+                print()
+                TournamentView.show_error(f"Nombre maximal de joueurs atteint ({limit}).")
                 wait_for_enter(ENTER_FOR_CONTINUE)
                 break
 
@@ -168,22 +168,23 @@ class TournamentController:
                 validator=is_valid_yes_no,
                 message_error=invalid_yes_no,
             )
-            if count < 2:
+
+            if choix == "Y":
+                clear_screen()
+                TournamentView.show_player_list_header(players)
+                new_player = self._ask_unique_player(players, count + 1, limit)
+                players.append(new_player)
+                t.list_of_players = players
+                self._save_progress()
+            elif count < 2:
                 clear_screen()
                 TournamentView.show_error(
                     f"Pas assez de joueurs pour démarrer le tournoi (minimum : {MIN_PLAYERS} joueur(s)).\n"
                     f"Veuillez ajouter au minimum {MIN_PLAYERS - count} joueur(s).")
                 print()
                 wait_for_enter(ENTER_FOR_CONTINUE)
-            elif choix != "Y":
+            else:
                 break
-
-            clear_screen()
-            TournamentView.show_player_list_header(players)
-            new_player = self._ask_unique_player(players, count + 1, limit)
-            players.append(new_player)
-            t.list_of_players = players
-            self._save_progress()
 
     def _ask_unique_player(self, existing: list[Player], idx: int, limit: int) -> Player:
         """
@@ -305,12 +306,28 @@ class TournamentController:
     @staticmethod
     def _load_players_and_rounds(data: dict, tc: TournamentController) -> None:
         """
-        Reconstruit la liste des joueurs et des rounds depuis le JSON.
+        Reconstruit les joueurs et les rounds à partir des données JSON.
         """
         t = tc.tournament
-        players_map: dict[str, Player] = {}
+        players_map = TournamentController._load_players(data, t)
+        rounds_data = data.get("list_of_rounds", [])
+        for r_data in rounds_data:
+            rnd = TournamentController._load_round(r_data, players_map)
+            t.list_of_rounds.append(rnd)
 
-        # Reconstruction des joueurs
+    @staticmethod
+    def _load_players(data: dict, tournament: Tournament) -> dict[str, Player]:
+        """
+        Reconstruit la liste des joueurs depuis le JSON et les ajoute au tournoi.
+
+        Args:
+            data: dictionnaire contenant les données JSON du tournoi.
+            tournament: instance du tournoi à remplir.
+
+        Returns:
+            Un dictionnaire associant chaque ID national à un objet Player.
+        """
+        players_map = {}
         for p_data in data.get("list_of_players", []):
             idn = p_data["id_national_chess"]
             try:
@@ -320,7 +337,7 @@ class TournamentController:
                     id_national_chess=idn,
                     first_name=None,
                     last_name=None,
-                    date_of_birth=p_data.get("date_of_birth", None),
+                    date_of_birth=p_data.get("date_of_birth"),
                     tournament_score=p_data.get("tournament_score", 0.0),
                     rank=p_data.get("rank", 0),
                     played_with=p_data.get("played_with", []),
@@ -330,88 +347,125 @@ class TournamentController:
                 player.rank = p_data.get("rank", 0)
                 player.played_with = p_data.get("played_with", [])
             players_map[idn] = player
-            t.list_of_players.append(player)
+            tournament.list_of_players.append(player)
+        return players_map
 
-        # Reconstruction des rounds et des matchs
-        matches: List[Dict[str, Any]] = data.get("list_of_rounds", [])
-        for r_data in matches:
-            rnd = Round(r_data["round_number"])
-            if r_data.get("start_time"):
-                rnd.start_time = datetime.datetime.strptime(
-                    r_data["start_time"], "%d/%m/%Y %H:%M:%S"
-                )
-            if r_data.get("end_time"):
-                rnd.end_time = datetime.datetime.strptime(
-                    r_data["end_time"], "%d/%m/%Y %H:%M:%S"
-                )
+    @staticmethod
+    def _load_round(r_data: dict, players_map: dict[str, Player]) -> Round:
+        """
+        Reconstruit un round et ses matchs depuis les données JSON.
 
-            for m_data in r_data.get("matches", []):
-                name = m_data["name"]
-                if "repos" in name.lower():
-                    bye_id = m_data["player_1"]["id_national_chess"]
-                    player = players_map.get(bye_id)
-                    match = Match(name, (player, None))
-                    match._snap1 = m_data["player_1"].copy()
-                    match.match_score_1 = match._snap1["match_score"]
-                    match.color_player_1 = match._snap1.get("color")
-                    match._snap2 = None
-                else:
-                    p1 = players_map[m_data["player_1"]["id_national_chess"]]
-                    p2 = players_map[m_data["player_2"]["id_national_chess"]]
-                    match = Match(name, (p1, p2))
-                    match._snap1 = m_data["player_1"].copy()
-                    match._snap2 = m_data["player_2"].copy()
-                    match.match_score_1 = m_data["player_1"]["match_score"]
-                    match.match_score_2 = m_data["player_2"]["match_score"]
-                    match.color_player_1 = m_data["player_1"].get("color")
-                    match.color_player_2 = m_data["player_2"].get("color")
-                rnd.matches.append(match)
+        Args:
+            r_data: dictionnaire contenant les données du round.
+            players_map: dictionnaire des joueurs indexé par ID national.
 
-            t.list_of_rounds.append(rnd)
+        Returns:
+            Un objet Round reconstruit avec ses matchs.
+        """
+        rnd = Round(r_data["round_number"])
+        if r_data.get("start_time"):
+            rnd.start_time = datetime.datetime.strptime(r_data["start_time"], "%d/%m/%Y %H:%M:%S")
+        if r_data.get("end_time"):
+            rnd.end_time = datetime.datetime.strptime(r_data["end_time"], "%d/%m/%Y %H:%M:%S")
+
+        for m_data in r_data.get("matches", []):
+            match = TournamentController._load_match(m_data, players_map)
+            rnd.matches.append(match)
+
+        return rnd
+
+    @staticmethod
+    def _load_match(m_data: dict, players_map: dict[str, Player]) -> Match:
+        """
+        Reconstruit un match depuis les données JSON.
+
+        Args:
+            m_data: dictionnaire contenant les données du match.
+            players_map: dictionnaire des joueurs indexé par ID national.
+
+        Returns:
+            Un objet Match reconstruit.
+        """
+        name = m_data["name"]
+        if "repos" in name.lower():
+            bye_id = m_data["player_1"]["id_national_chess"]
+            player = players_map.get(bye_id)
+            match = Match(name, (player, None))
+            match._snap1 = m_data["player_1"].copy()
+            match.match_score_1 = match._snap1["match_score"]
+            match.color_player_1 = match._snap1.get("color")
+            match._snap2 = None
+        else:
+            p1 = players_map[m_data["player_1"]["id_national_chess"]]
+            p2 = players_map[m_data["player_2"]["id_national_chess"]]
+            match = Match(name, (p1, p2))
+            match._snap1 = m_data["player_1"].copy()
+            match._snap2 = m_data["player_2"].copy()
+            match.match_score_1 = m_data["player_1"]["match_score"]
+            match.match_score_2 = m_data["player_2"]["match_score"]
+            match.color_player_1 = m_data["player_1"].get("color")
+            match.color_player_2 = m_data["player_2"].get("color")
+        return match
 
     def resume(self) -> None:
         """
-        Reprend un tournoi existant selon son état (actual_round) :
-          - Si actual_round == 0 : complète les champs manquants, réinscription si besoin, puis ask_to_start.
-          - Si 1 ≤ actual_round < number_of_rounds : termine ou passe au round suivant.
-          - Si actual_round == number_of_rounds et terminé : affiche le récapitulatif final.
+        Reprend un tournoi existant en fonction de son état :
+        - Si aucun round n’a commencé : collecte ou complète les infos, puis démarre.
+        - Si un round est en cours : reprend à partir du bon round.
+        - Si le tournoi est terminé : affiche le récapitulatif.
         """
         t = self.tournament
-
-        # A : aucun round démarré
         if t.actual_round == 0:
-            if self._raw_data:
-                TournamentController._fill_missing_fields(self._raw_data, self)
+            self._resume_before_first_round()
+        elif 1 <= t.actual_round < t.number_of_rounds:
+            self._resume_ongoing_round()
+        elif t.actual_round == t.number_of_rounds:
+            self._resume_after_last_round()
 
-            if not t.list_of_players:
-                self._register_players_phase1()
-                self._register_players_phase2()
-                if not self._ask_to_start():
-                    return
-            else:
-                clear_screen()
-                self._register_players_phase2()
-                if not self._ask_to_start():
-                    return
+    def _resume_before_first_round(self) -> None:
+        """
+        Reprend la configuration du tournoi si aucun round n’a encore démarré :
+        vérifie les champs, permet d’inscrire les joueurs, puis propose de démarrer.
+        """
+        t = self.tournament
+        if self._raw_data:
+            TournamentController._fill_missing_fields(self._raw_data, self)
 
-            RoundController(t, self.filename).run()
-            return
-
-        # B : tournoi en cours
-        if 1 <= t.actual_round < t.number_of_rounds:
-            current = t.list_of_rounds[t.actual_round - 1]
-            if current.end_time is not None:
-                t.actual_round += 1
-                self._save_progress()
-            RoundController(t, self.filename).start_from_round(t.actual_round)
-            return
-
-        # C : après le dernier round
-        if t.actual_round == t.number_of_rounds:
-            last = t.list_of_rounds[-1]
-            if last.end_time is not None:
-                TournamentView.show_tournament_summary(t)
-                wait_for_enter(ENTER_FOR_MAIN_MENU)
+        if not t.list_of_players:
+            self._register_players_phase1()
+            self._register_players_phase2()
+            if not self._ask_to_start():
                 return
+        else:
+            clear_screen()
+            self._register_players_phase2()
+            if not self._ask_to_start():
+                return
+
+        RoundController(t, self.filename).run()
+
+    def _resume_ongoing_round(self) -> None:
+        """
+        Reprend un tournoi en cours entre deux rounds.
+        Incrémente si le round précédent est terminé, puis lance le round suivant.
+        """
+        t = self.tournament
+        current = t.list_of_rounds[t.actual_round - 1]
+        if current.end_time is not None:
+            t.actual_round += 1
+            self._save_progress()
+        RoundController(t, self.filename).start_from_round(t.actual_round)
+
+    def _resume_after_last_round(self) -> None:
+        """
+        Reprend un tournoi terminé (ou dont le dernier round est en cours).
+        Si le dernier round est fini, affiche le récapitulatif.
+        Sinon, propose de le compléter.
+        """
+        t = self.tournament
+        last = t.list_of_rounds[-1]
+        if last.end_time is not None:
+            TournamentView.show_tournament_summary(t)
+            wait_for_enter(ENTER_FOR_MAIN_MENU)
+        else:
             RoundController(t, self.filename).start_from_round(t.actual_round)
-            return

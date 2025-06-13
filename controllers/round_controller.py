@@ -73,40 +73,58 @@ class RoundController:
     def make_round(self, index: int) -> Round:
         """
         Crée un Round, démarre l'horodatage et génère les appariements.
-        Initialise les scores et snapshots des matchs.
+        Initialise les scores et les snapshots des matchs.
         """
         rnd = Round(f"Round {index}")
         rnd.start_round()
         rnd.generate_pairings(self.players)
+
         for match in rnd.matches:
             match.assign_color()
-            # initialisation des scores
-            match.match_score_1 = None
+            self._initialize_match_scores(match)
             if match.player_2:
-                match.match_score_2 = None
-                match.winner = None
-            else:
-                match.winner = None
-            # snapshot initial
-            if match.player_2:
-                p1, p2 = match.player_1, match.player_2
-                match._snap1 = {
-                    "id_national_chess": p1.id_national_chess,
-                    "match_score": None,
-                    "tournament_score": None,
-                    "rank": None,
-                    "color": match.color_player_1,
-                    "played_with": [p2.id_national_chess]
-                }
-                match._snap2 = {
-                    "id_national_chess": p2.id_national_chess,
-                    "match_score": None,
-                    "tournament_score": None,
-                    "rank": None,
-                    "color": match.color_player_2,
-                    "played_with": [p1.id_national_chess]
-                }
+                self._initialize_match_snapshots(match)
+
         return rnd
+
+    def _initialize_match_scores(self, match: Match) -> None:
+        """
+        Initialise les scores et le gagnant d’un match à None.
+
+        Args:
+            match: Le match à initialiser.
+        """
+        match.match_score_1 = None
+        if match.player_2:
+            match.match_score_2 = None
+            match.winner = None
+        else:
+            match.winner = None
+
+    def _initialize_match_snapshots(self, match: Match) -> None:
+        """
+        Initialise les snapshots des deux joueurs pour un match complet (pas de repos).
+
+        Args:
+            match: Le match dont les snapshots doivent être initialisés.
+        """
+        p1, p2 = match.player_1, match.player_2
+        match._snap1 = {
+            "id_national_chess": p1.id_national_chess,
+            "match_score": None,
+            "tournament_score": None,
+            "rank": None,
+            "color": match.color_player_1,
+            "played_with": [p2.id_national_chess]
+        }
+        match._snap2 = {
+            "id_national_chess": p2.id_national_chess,
+            "match_score": None,
+            "tournament_score": None,
+            "rank": None,
+            "color": match.color_player_2,
+            "played_with": [p1.id_national_chess]
+        }
 
     def _execute_match(self, match: Match, rnd: Round, rnd_num: int) -> None:
         """

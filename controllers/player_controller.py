@@ -24,12 +24,6 @@ class PlayerController:
         """
         Charge un profil joueur depuis le JSON ou en crée un nouveau.
 
-        Si le fichier existe :
-          - Complète les champs manquants.
-          - Si prompt_modify=True et le profil est complet, propose une modification.
-        Sinon :
-          - Crée un profil minimal, persiste l'ID puis invite à saisir tous les champs.
-
         Args:
             id_national (str): Identifiant national unique du joueur.
             prompt_modify (bool): Si True, invite à modifier un profil déjà complet.
@@ -38,57 +32,73 @@ class PlayerController:
             Player: L'objet Player chargé ou créé et mis à jour.
         """
         try:
-            # Tentative de chargement depuis JSON
             player = load_player_from_json(PLAYERS_FOLDER, id_national)
             missing = PlayerController._get_missing_fields(player)
+            PlayerController._handle_existing_player(player, missing, prompt_modify)
+            return player
+        except FileNotFoundError:
+            return PlayerController._create_new_player(id_national)
 
-            if missing:
-                PlayerView.display_player_incomplete(player)
-                wait_for_enter(ENTER_FOR_CONTINUE)
-                PlayerController._complete_fields(player, missing)
+    @staticmethod
+    def _handle_existing_player(player: Player, missing: list[str], prompt_modify: bool) -> None:
+        """
+        Gère un profil existant : complète les champs manquants ou propose une modification.
+
+        Args:
+            player (Player): Joueur chargé depuis le JSON.
+            missing (list[str]): Champs manquants à compléter.
+            prompt_modify (bool): Si True, propose une modification si le profil est complet.
+        """
+        if missing:
+            PlayerView.display_player_incomplete(player)
+            wait_for_enter(ENTER_FOR_CONTINUE)
+            PlayerController._complete_fields(player, missing)
+            PlayerView.display_player_updated(player)
+            wait_for_enter(ENTER_FOR_CONTINUE)
+        elif prompt_modify:
+            PlayerView.display_player_already_exist(player)
+            wait_for_enter(ENTER_FOR_CONTINUE)
+            choice = get_valid_input(
+                prompt="Voulez-vous modifier ce joueur (Y/N) ? ",
+                formatter=format_yes_no,
+                validator=is_valid_yes_no,
+                message_error=invalid_yes_no,
+            )
+            if choice == "Y":
+                PlayerController._complete_fields(
+                    player, ["first_name", "last_name", "date_of_birth"]
+                )
                 PlayerView.display_player_updated(player)
                 wait_for_enter(ENTER_FOR_CONTINUE)
 
-            elif prompt_modify:
-                PlayerView.display_player_already_exist(player)
-                wait_for_enter(ENTER_FOR_CONTINUE)
-                choice = get_valid_input(
-                    prompt="Voulez-vous modifier ce joueur (Y/N) ? ",
-                    formatter=format_yes_no,
-                    validator=is_valid_yes_no,
-                    message_error=invalid_yes_no,
-                )
-                if choice == "Y":
-                    # Complète tous les champs pour une modification complète
-                    PlayerController._complete_fields(
-                        player, ["first_name", "last_name", "date_of_birth"]
-                    )
-                    PlayerView.display_player_updated(player)
-                    wait_for_enter(ENTER_FOR_CONTINUE)
+    @staticmethod
+    def _create_new_player(id_national: str) -> Player:
+        """
+        Crée un nouveau joueur vide et initialise tous ses champs.
 
-            return player
+        Args:
+            id_national (str): Identifiant national du nouveau joueur.
 
-        except FileNotFoundError:
-            # Création d'un nouveau profil minimal
-            player = Player(
-                id_national_chess=id_national,
-                first_name=None,
-                last_name=None,
-                date_of_birth=None,
-            )
-            # Première persistance de l'ID seul
-            save_player_to_json(
-                player.get_serialized_player(),
-                PLAYERS_FOLDER,
-                f"{id_national}.json"
-            )
-            # Saisie de tous les champs puis feedback
-            PlayerController._complete_fields(
-                player, ["first_name", "last_name", "date_of_birth"]
-            )
-            PlayerView.display_player_added(player)
-            wait_for_enter(ENTER_FOR_CONTINUE)
-            return player
+        Returns:
+            Player: Joueur nouvellement créé avec ses données saisies.
+        """
+        player = Player(
+            id_national_chess=id_national,
+            first_name=None,
+            last_name=None,
+            date_of_birth=None,
+        )
+        save_player_to_json(
+            player.get_serialized_player(),
+            PLAYERS_FOLDER,
+            f"{id_national}.json"
+        )
+        PlayerController._complete_fields(
+            player, ["first_name", "last_name", "date_of_birth"]
+        )
+        PlayerView.display_player_added(player)
+        wait_for_enter(ENTER_FOR_CONTINUE)
+        return player
 
     @staticmethod
     def _get_missing_fields(player: Player) -> list[str]:

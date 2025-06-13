@@ -153,61 +153,70 @@ class Match:
     def get_serialized_match(self) -> Dict[str, Any]:
         """
         Sérialise l'objet Match en dictionnaire prêt pour JSON.
-        Ne modifie pas l'état interne.
+        Différencie les cas : match avec repos, non joué, ou joué.
         """
         if self.player_2 is None:
-            if self._snap1:
-                snap1 = self._snap1
-            else:
-                snap1 = {
-                    "id_national_chess": self.player_1.id_national_chess,
-                    "match_score": self.match_score_1,            # ce doit être BYE_POINT
-                    "tournament_score": self.player_1.tournament_score,
-                    "rank": self.player_1.rank,
-                    "color": None,
-                    "played_with": list(self.player_1.played_with)
-                }
-            return {
-                "name": self.name,
-                "player_1": snap1,
-                "player_2": None,
-                "winner": {"id_national_chess": snap1["id_national_chess"]}
-            }
-
-        # 2) Cas match classique
+            return self._serialize_bye_match()
         if (
             self._snap1 is None or
             self._snap2 is None or
             self._snap1.get("match_score") is None or
             self._snap2.get("match_score") is None
         ):
-            return {
-                "name": self.name,
-                "player_1": {
-                    "id_national_chess": self.player_1.id_national_chess,
-                    "match_score": None,
-                    "tournament_score": self.player_1.tournament_score,
-                    "rank": self.player_1.rank,
-                    "color": self.color_player_1,
-                    "played_with": list(self.player_1.played_with)
-                },
-                "player_2": {
-                    "id_national_chess": self.player_2.id_national_chess,
-                    "match_score": None,
-                    "tournament_score": self.player_2.tournament_score,
-                    "rank": self.player_2.rank,
-                    "color": self.color_player_2,
-                    "played_with": list(self.player_2.played_with)
-                },
-                "winner": None
-            }
+            return self._serialize_unplayed_match()
+        return self._serialize_played_match()
 
-        # 3) Match effectivement joué
-        if self.winner is None:
-            winner_field = "draw"
-        else:
-            winner_field = {"id_national_chess": self.winner.id_national_chess}
+    def _serialize_bye_match(self) -> Dict[str, Any]:
+        """
+        Sérialise un match de repos (bye), uniquement le joueur 1 est concerné.
+        """
+        snap1 = self._snap1 or {
+            "id_national_chess": self.player_1.id_national_chess,
+            "match_score": self.match_score_1,
+            "tournament_score": self.player_1.tournament_score,
+            "rank": self.player_1.rank,
+            "color": None,
+            "played_with": list(self.player_1.played_with)
+        }
+        return {
+            "name": self.name,
+            "player_1": snap1,
+            "player_2": None,
+            "winner": {"id_national_chess": snap1["id_national_chess"]}
+        }
 
+    def _serialize_unplayed_match(self) -> Dict[str, Any]:
+        """
+        Sérialise un match classique non encore joué (snapshots ou scores manquants).
+        """
+        return {
+            "name": self.name,
+            "player_1": {
+                "id_national_chess": self.player_1.id_national_chess,
+                "match_score": None,
+                "tournament_score": self.player_1.tournament_score,
+                "rank": self.player_1.rank,
+                "color": self.color_player_1,
+                "played_with": list(self.player_1.played_with)
+            },
+            "player_2": {
+                "id_national_chess": self.player_2.id_national_chess,
+                "match_score": None,
+                "tournament_score": self.player_2.tournament_score,
+                "rank": self.player_2.rank,
+                "color": self.color_player_2,
+                "played_with": list(self.player_2.played_with)
+            },
+            "winner": None
+        }
+
+    def _serialize_played_match(self) -> Dict[str, Any]:
+        """
+        Sérialise un match classique terminé, avec snapshots complets et vainqueur.
+        """
+        winner_field = "draw" if self.winner is None else {
+            "id_national_chess": self.winner.id_national_chess
+        }
         return {
             "name": self.name,
             "player_1": self._snap1,

@@ -43,7 +43,6 @@ class MenuView:
             if choix == "1":
                 clear_screen()
                 PlayerController.create_player()
-                wait_for_enter(ENTER_FOR_MAIN_MENU)
 
             elif choix == "2":
                 clear_screen()
@@ -103,10 +102,8 @@ class MenuView:
 
     def _load_tournament_flow(self) -> None:
         """
-        1) Liste les fichiers JSON dans TOURNAMENTS_FOLDER.
-        2) Demande à l’utilisateur d’en choisir un.
-        3) Si introuvable, propose de créer un nouveau tournoi.
-        4) Sinon, charge le JSON et délègue au controller.
+        Gère l'expérience utilisateur de chargement de tournoi :
+        liste les fichiers disponibles, demande un choix, puis charge ou redirige.
         """
         if not os.path.isdir(TOURNAMENTS_FOLDER):
             print(f"Aucun dossier '{TOURNAMENTS_FOLDER}' trouvé.")
@@ -114,24 +111,50 @@ class MenuView:
             wait_for_enter(ENTER_FOR_MAIN_MENU)
             return
 
-        files = [f for f in os.listdir(TOURNAMENTS_FOLDER) if f.endswith(".json")]
+        files = self._list_json_files()
         if not files:
             print(f"Aucun tournoi enregistré dans {TOURNAMENTS_FOLDER}.")
             print("Créez d’abord un tournoi (option 2).")
             wait_for_enter(ENTER_FOR_MAIN_MENU)
             return
 
+        file_choice = self._prompt_for_file(files)
+        if file_choice:
+            self._handle_file_choice(file_choice, files)
+
+    def _list_json_files(self) -> list[str]:
+        """
+        Liste et affiche tous les fichiers .json du dossier TOURNAMENTS_FOLDER.
+
+        Returns:
+            Liste des fichiers .json trouvés.
+        """
+        files = [f for f in os.listdir(TOURNAMENTS_FOLDER) if f.endswith(".json")]
         clear_screen()
         print("\nFichiers de tournois disponibles :\n")
         for filename in files:
             print(f"  • {filename}")
         MenuView.console.print(prompt_file_to_load())
+        return files
 
+    def _prompt_for_file(self, files: list[str]) -> str | None:
+        """
+        Demande à l'utilisateur de saisir un nom de fichier.
+
+        Returns:
+            Le nom choisi ou None si annulation.
+        """
         file_choice = input("Nom du fichier à charger → ").strip()
-        if not file_choice:
-            clear_screen()
-            return
+        return file_choice if file_choice else None
 
+    def _handle_file_choice(self, file_choice: str, files: list[str]) -> None:
+        """
+        Traite le fichier choisi par l'utilisateur : charge le tournoi ou propose d'en créer un.
+
+        Args:
+            file_choice: Nom du fichier choisi.
+            files: Liste des fichiers disponibles.
+        """
         if file_choice not in files:
             clear_screen()
             print(f"❌ Le fichier « {file_choice} » n'existe pas.")

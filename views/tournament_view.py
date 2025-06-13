@@ -5,7 +5,6 @@ from rich import box
 
 from config import PLAYERS_FOLDER, PLAYERS_FILENAME, ENTER_FOR_CONTINUE, DEFAULT_NUMBER_OF_ROUND
 from controllers.player_controller import PlayerController
-from models.player_model import Player
 from models.tournament_model import Tournament
 from utils.console import wait_for_enter
 from utils.console import clear_screen
@@ -187,64 +186,117 @@ class TournamentView:
     @staticmethod
     def show_tournament_summary(tournament: Tournament) -> None:
         """
-        Affiche un résumé complet d’un tournoi déjà terminé ou en cours :
-        1. En-tête général (nom, lieu, dates)
-        2. Classement final (ou provisoire) des joueurs
-        3. Pour chaque round : numéro, horaire et tableau des matchs.
-
-        - `tournament`: instance de Tournament ayant les listes list_of_players et list_of_rounds complètes.
+        Affiche un résumé complet d’un tournoi terminé ou en cours :
+        1. En-tête général
+        2. Classement final
+        3. Détail des rounds et matchs
+        4. Indication si le tournoi est toujours en cours
         """
         clear_screen()
-        console = Console()
+        console = TournamentView.console
 
-        # 0) Construire un mapping IDN → Player
-        players_map: dict[str, Player] = {
-            p.id_national_chess: p for p in tournament.list_of_players
-        }
+        players_map = TournamentView._build_players_map(tournament)
 
-        print("Tournoi terminé. Récapitulatif final :\n")
+        if tournament.actual_round == 0:
+            console.print(
+                "[italic yellow]Le tournoi n’a pas encore démarré. Aucun round n’a été joué.[/italic yellow]\n"
+            )
+        else:
+            print("Tournoi terminé. Récapitulatif final :\n")
+            TournamentView._print_tournament_header(tournament)
+            TournamentView._print_final_ranking(tournament)
+            TournamentView._print_rounds_summary(tournament, players_map)
 
-        # 1) En-tête général
+            if tournament.actual_round < tournament.number_of_rounds:
+                last_round = tournament.list_of_rounds[-1]
+                if last_round.end_time is None:
+                    console.print(
+                        f"[italic yellow]\nLe tournoi est en cours : "
+                        f"{tournament.actual_round - 1} / {tournament.number_of_rounds} round(s) joué(s).\n"
+                        f"Le round {tournament.actual_round} est en cours...[/italic yellow]"
+                    )
+
+    console.print()
+    console.print("[bold green]»» Résumé du tournoi affiché.[/bold green]\n")
+
+    @staticmethod
+    def _build_players_map(tournament: Tournament) -> dict:
+        """
+        Crée un dictionnaire d’accès rapide entre IDN et Player.
+
+        Args:
+            tournament (Tournament): Le tournoi contenant la liste des joueurs.
+
+        Returns:
+            dict: Clé = IDN, Valeur = Player instance
+        """
+        return {p.id_national_chess: p for p in tournament.list_of_players}
+
+    @staticmethod
+    def _print_tournament_header(tournament: Tournament) -> None:
+        """
+        Affiche l’en-tête général d’un tournoi : nom, lieu et dates.
+
+        Args:
+            tournament (Tournament): Tournoi à résumer.
+        """
+        console = TournamentView.console
         console.print()
         console.print(f"[b underline]🏆 Résumé du tournoi : {tournament.tournament_name}[/b underline]\n")
         console.print(f"📍  Lieu       : {tournament.location}")
         console.print(f"📅  Période    : {tournament.start_date}  →  {tournament.end_date}\n\n")
 
-        # 2) Classement final (ou provisoire)
+    @staticmethod
+    def _print_final_ranking(tournament: Tournament) -> None:
+        """
+        Affiche le classement final ou provisoire des joueurs.
+
+        Args:
+            tournament (Tournament): Le tournoi avec les scores à afficher.
+        """
+        console = TournamentView.console
         console.print("[b]Classement final[/b]\n")
-        classement = Table(
+        table = Table(
             title="Classement des joueurs",
             box=box.SIMPLE_HEAVY,
             show_edge=True,
             header_style="bold magenta"
         )
-        classement.add_column("Rang", justify="center")
-        classement.add_column("IDN", justify="center")
-        classement.add_column("Nom", justify="center")
-        classement.add_column("Prénom", justify="center")
-        classement.add_column("Score", justify="center")
+        table.add_column("Rang", justify="center")
+        table.add_column("IDN", justify="center")
+        table.add_column("Nom", justify="center")
+        table.add_column("Prénom", justify="center")
+        table.add_column("Score", justify="center")
 
-        # On trie par rang croissant
         for player in sorted(tournament.list_of_players, key=lambda p: p.rank):
-            score = player.tournament_score
-            s_str = f"{score:.1f}"
-            classement.add_row(
+            table.add_row(
                 str(player.rank),
                 player.id_national_chess,
                 player.last_name,
                 player.first_name,
-                s_str
+                f"{player.tournament_score:.1f}"
             )
 
-        console.print(classement)
+        console.print(table)
         console.print()
 
-        # 3) Pour chaque round, afficher son tableau de matchs
+    @staticmethod
+    def _print_rounds_summary(tournament: Tournament, players_map: dict) -> None:
+        """
+        Affiche le détail des rounds du tournoi et de leurs matchs.
+
+        Args:
+            tournament (Tournament): Tournoi à afficher.
+            players_map (dict): Dictionnaire IDN → Player.
+        """
+        console = TournamentView.console
+
+        def fmt_score(score):
+            return f"{score:.1f}" if score is not None else "[Match non commencé]"
+
         for rnd in tournament.list_of_rounds:
             console.print(f"→ {rnd.round_number}")
-            # Date de début ou “[Pas commencé]” si start_time est None
             start = rnd.get_formatted_start_time() if rnd.start_time else "[Pas commencé]"
-            # Date de fin ou “[En cours]” si end_time est None
             end = rnd.get_formatted_end_time() if rnd.end_time else "[En cours]"
             console.print(f"   • Début : {start} | Fin : {end}")
 
@@ -261,90 +313,34 @@ class TournamentView:
             table.add_column("Score 2", justify="center")
 
             for match in rnd.matches:
-                # Cas « match de repos » : player_2 est None
                 if match.player_2 is None:
-                    p1_snap = match._snap1
-                    id1 = p1_snap.get("id_national_chess", "")
-                    # Récupérer le Player complet depuis players_map
-                    if id1 in players_map:
-                        p1_full: Player = players_map[id1]
-                        nom1 = p1_full.last_name
-                        prenom1 = p1_full.first_name
-                    else:
-                        nom1 = "[?]"
-                        prenom1 = "[?]"
-
-                    sc1 = p1_snap.get("match_score", None)
-                    sc1_str = f"{sc1:.1f}" if sc1 is not None else "[Match non commencé]"
-
-                    # On affiche le match de repos : pas de joueur 2
+                    p1 = players_map.get(match._snap1.get("id_national_chess"), None)
                     table.add_row(
                         match.name,
-                        id1,
-                        nom1,
-                        prenom1,
-                        sc1_str,
-                        "⚔️",
-                        "-", "-", "-", "-"
+                        match._snap1.get("id_national_chess", ""),
+                        p1.last_name if p1 else "[?]",
+                        p1.first_name if p1 else "[?]",
+                        fmt_score(match._snap1.get("match_score")),
+                        "⚔️", "-", "-", "-", "-"
                     )
-
                 else:
-                    # Cas « match classique »
-                    p1_snap = match._snap1 or {}
-                    p2_snap = match._snap2 or {}
-
-                    id1 = p1_snap.get("id_national_chess", "")
-                    id2 = p2_snap.get("id_national_chess", "")
-
-                    # Nom/prénom réel pour le joueur 1
-                    if id1 in players_map:
-                        p1_full: Player = players_map[id1]
-                        nom1 = p1_full.last_name
-                        prenom1 = p1_full.first_name
-                    else:
-                        nom1 = "[?]"
-                        prenom1 = "[?]"
-
-                    # Nom/prénom réel pour le joueur 2
-                    if id2 in players_map:
-                        p2_full: Player = players_map[id2]
-                        nom2 = p2_full.last_name
-                        prenom2 = p2_full.first_name
-                    else:
-                        nom2 = "[?]"
-                        prenom2 = "[?]"
-
-                    sc1 = p1_snap.get("match_score", None)
-                    sc2 = p2_snap.get("match_score", None)
-
-                    # Afficher toujours la décimale ou “[En cours]”
-                    def fmt_score(x):
-                        return f"{x:.1f}" if x is not None else "[Match non commencé]"
-
-                    sc1_str = fmt_score(sc1)
-                    sc2_str = fmt_score(sc2)
+                    id1 = match._snap1.get("id_national_chess", "")
+                    id2 = match._snap2.get("id_national_chess", "")
+                    p1 = players_map.get(id1, None)
+                    p2 = players_map.get(id2, None)
 
                     table.add_row(
                         match.name,
-                        id1, nom1, prenom1, sc1_str,
+                        id1, p1.last_name if p1 else "[?]",
+                        p1.first_name if p1 else "[?]",
+                        fmt_score(match._snap1.get("match_score")),
                         "⚔️",
-                        id2, nom2, prenom2, sc2_str
+                        id2, p2.last_name if p2 else "[?]",
+                        p2.first_name if p2 else "[?]",
+                        fmt_score(match._snap2.get("match_score"))
                     )
-
             console.print(table)
-            console.print()  # Ligne vide après chaque round
-
-        # Si le tournoi n’est pas terminé, on l’indique
-        if tournament.actual_round < tournament.number_of_rounds:
-            if end == "[En cours]":
-                console.print(
-                    f"[italic yellow]\nLe tournoi est en cours : "
-                    f"{tournament.actual_round - 1} / {tournament.number_of_rounds} round(s) joué(s).\n"
-                    f"Le round {tournament.actual_round} est en cours...[/italic yellow]"
-                )
-
-        console.print()
-        console.print("[bold green]»» Résumé du tournoi affiché.[/bold green]\n")
+            console.print()
 
     @staticmethod
     def show_error(message: str) -> None:

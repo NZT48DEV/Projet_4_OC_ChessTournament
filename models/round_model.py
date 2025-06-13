@@ -1,6 +1,6 @@
 import datetime
 import random
-from typing import Dict, List, Set
+from typing import Dict, List, Set, Tuple
 
 from models.match_model import Match
 from models.player_model import Player
@@ -83,11 +83,28 @@ class Round:
 
     def _pair_players(self, pool: List[Player]) -> None:
         """
-        Apparie les joueurs restants en deux passes : sans rematch puis en forçant rematch.
+        Apparie les joueurs restants en deux passes :
+        - d'abord sans rematch
+        - ensuite en forçant les rematchs si nécessaire
+        """
+        paired, unpaired = self._pair_without_rematch(pool)
+        self._pair_with_rematch(unpaired, paired)
+
+    def _pair_without_rematch(self, pool: List[Player]) -> Tuple[Set[Player], List[Player]]:
+        """
+        Tente de créer des matchs sans rematch entre joueurs.
+
+        Args:
+            pool: Liste des joueurs à apparier.
+
+        Returns:
+            Un tuple contenant :
+            - le set des joueurs déjà appariés
+            - la liste des joueurs restants non appariés
         """
         paired: Set[Player] = set()
         unpaired: List[Player] = []
-        # Passe 1 : sans rematch
+
         for p1 in pool:
             if p1 in paired:
                 continue
@@ -96,7 +113,6 @@ class Round:
                     continue
                 if p2.id_national_chess in p1.played_with:
                     continue
-                # appariement
                 paired.update({p1, p2})
                 p1.played_with.append(p2.id_national_chess)
                 p2.played_with.append(p1.id_national_chess)
@@ -104,10 +120,19 @@ class Round:
                 break
             else:
                 unpaired.append(p1)
-        # Passe 2 : forcer rematch
+
+        return paired, unpaired
+
+    def _pair_with_rematch(self, unpaired: List[Player], paired: Set[Player]) -> None:
+        """
+        Force des appariements même s'ils impliquent un rematch.
+
+        Args:
+            unpaired: Liste de joueurs non appariés après la première passe.
+            paired: Set des joueurs déjà appariés.
+        """
         while len(unpaired) >= 2:
             p1 = unpaired.pop(0)
-            # trouve un partenaire non apparié idéal
             p2 = next((c for c in unpaired if c.id_national_chess not in p1.played_with), None)
             if p2 is None:
                 p2 = unpaired[0]

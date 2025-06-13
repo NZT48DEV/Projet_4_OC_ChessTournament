@@ -150,50 +150,61 @@ class ReportsView:
             return
 
         data = load_tournament_from_json(chemin)
-        players_data = data.get("list_of_players", [])
-        if not players_data:
-            clear_screen()
-            print("\nAucun joueur inscrit dans ce tournoi.")
-            print()
-            wait_for_enter(ENTER_FOR_RAPPORT)
-            clear_screen()
-            return
+        players, missing_ids = ReportsView._load_players_from_tournament_data(data)
 
-        # On préparera deux listes :
-        #  - players_objs : instances Player valides à afficher
-        #  - missing_ids  : liste des IDN pour lesquels aucun fichier n'a été trouvé
-        players_objs: list[Player] = []
-        missing_ids: list[str] = []
+        clear_screen()
+        ReportsView._display_player_profiles(players)
+        ReportsView._display_missing_ids(missing_ids)
+
+        print()
+        wait_for_enter(ENTER_FOR_RAPPORT)
+        clear_screen()
+
+    @staticmethod
+    def _load_players_from_tournament_data(data: dict) -> tuple[list[Player], list[str]]:
+        """
+        Charge les profils joueurs d'un tournoi à partir du JSON.
+
+        Returns:
+            Tuple : (liste des joueurs valides, liste des ID manquants)
+        """
+        players_data = data.get("list_of_players", [])
+        players: list[Player] = []
+        missing: list[str] = []
 
         for p in players_data:
             idn = p.get("id_national_chess", "")
             try:
-                player_full = load_player_from_json(PLAYERS_FOLDER, idn)
+                player = load_player_from_json(PLAYERS_FOLDER, idn)
             except FileNotFoundError:
-                missing_ids.append(idn)
-                continue
+                missing.append(idn)
             else:
-                # Mettre à jour les champs spécifiques au tournoi
-                player_full.tournament_score = p.get("tournament_score", 0.0)
-                player_full.rank = p.get("rank", 0)
-                player_full.played_with = p.get("played_with", [])
-                players_objs.append(player_full)
+                player.tournament_score = p.get("tournament_score", 0.0)
+                player.rank = p.get("rank", 0)
+                player.played_with = p.get("played_with", [])
+                players.append(player)
 
-        clear_screen()
-        # Afficher d’abord la liste des profils valides, si elle n'est pas vide
-        if players_objs:
-            TournamentView.show_player_list_header(players_objs)
+        return players, missing
+
+    @staticmethod
+    def _display_player_profiles(players: list[Player]) -> None:
+        """
+        Affiche les profils valides chargés.
+        """
+        if players:
+            TournamentView.show_player_list_header(players)
         else:
             print("Aucun profil de joueur valide n'a été trouvé pour ce tournoi.")
 
-        # Ensuite, pour chaque IDN manquant, afficher un message explicite
+    @staticmethod
+    def _display_missing_ids(missing_ids: list[str]) -> None:
+        """
+        Affiche les ID des profils manquants.
+        """
         if missing_ids:
             print("\n-----\n")
             for idn in missing_ids:
                 print(f"Le joueur avec l’IDN {idn} n’existe pas.")
-        print()
-        wait_for_enter(ENTER_FOR_RAPPORT)
-        clear_screen()
 
     @staticmethod
     def list_rounds_and_matches_for_tournament():

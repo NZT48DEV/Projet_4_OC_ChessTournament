@@ -25,6 +25,8 @@ def update_ranks(tournament: Tournament) -> None:
     for player in sorted_players:
         if prev_score is None or player.tournament_score != prev_score:
             last_assigned_rank = current_dense_rank
-        player.rank = last_assigned_rank
-        prev_score = player.tournament_score
-        current_dense_rank += 1
+            player.rank = last_assigned_rank
+            prev_score = player.tournament_score
+            current_dense_rank += 1
+        else:
+            player.rank = last_assigned_rank

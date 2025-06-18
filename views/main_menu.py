@@ -18,7 +18,8 @@ class MenuView:
     """
     console = Console()
 
-    def display_main_menu(self) -> None:
+    @classmethod
+    def display_main_menu(cls) -> None:
         """Affiche le menu principal."""
         print("\n" + "=" * 40)
         print("♟️       TOURNOI D'ÉCHECS - MENU       ♟️")
@@ -30,14 +31,15 @@ class MenuView:
         print("0. ❌ Quitter")
         print("-" * 40)
 
-    def menu(self) -> None:
+    @classmethod
+    def menu(cls) -> None:
         """
         Boucle principale du menu :
         affiche le menu, lit le choix et appelle la méthode associée.
         """
         while True:
             clear_screen()
-            self.display_main_menu()
+            cls.display_main_menu()
             choix = input("Votre Choix → ").strip()
 
             if choix == "1":
@@ -51,11 +53,11 @@ class MenuView:
 
             elif choix == "3":
                 clear_screen()
-                self._load_tournament_flow()
+                cls._load_tournament_flow()
 
             elif choix == "4":
                 clear_screen()
-                self._show_reports_menu()
+                cls._show_reports_menu()
 
             elif choix == "0":
                 clear_screen()
@@ -66,7 +68,8 @@ class MenuView:
                 clear_screen()
                 print("Choix invalide, veuillez réessayer.")
 
-    def _show_reports_menu(self) -> None:
+    @staticmethod
+    def _show_reports_menu() -> None:
         """
         Affiche le sous-menu des rapports et exécute
         l’action correspondant au choix de l’utilisateur.
@@ -100,7 +103,8 @@ class MenuView:
                 clear_screen()
                 print("Choix invalide, veuillez réessayer.")
 
-    def _load_tournament_flow(self) -> None:
+    @classmethod
+    def _load_tournament_flow(cls) -> None:
         """
         Gère l'expérience utilisateur de chargement de tournoi :
         liste les fichiers disponibles, demande un choix, puis charge ou redirige.
@@ -111,18 +115,19 @@ class MenuView:
             wait_for_enter(ENTER_FOR_MAIN_MENU)
             return
 
-        files = self._list_json_files()
+        files = cls._list_json_files()
         if not files:
             print(f"Aucun tournoi enregistré dans {TOURNAMENTS_FOLDER}.")
             print("Créez d’abord un tournoi (option 2).")
             wait_for_enter(ENTER_FOR_MAIN_MENU)
             return
 
-        file_choice = self._prompt_for_file(files)
+        file_choice = cls._prompt_for_file(files)
         if file_choice:
-            self._handle_file_choice(file_choice, files)
+            cls._handle_file_choice(file_choice, files)
 
-    def _list_json_files(self) -> list[str]:
+    @classmethod
+    def _list_json_files(cls) -> list[str]:
         """
         Liste et affiche tous les fichiers .json du dossier TOURNAMENTS_FOLDER.
 
@@ -134,10 +139,11 @@ class MenuView:
         print("\nFichiers de tournois disponibles :\n")
         for filename in files:
             print(f"  • {filename}")
-        MenuView.console.print(prompt_file_to_load())
+        cls.console.print(prompt_file_to_load())
         return files
 
-    def _prompt_for_file(self, files: list[str]) -> str | None:
+    @staticmethod
+    def _prompt_for_file(files: list[str]) -> str | None:
         """
         Demande à l'utilisateur de saisir un nom de fichier.
 
@@ -147,7 +153,8 @@ class MenuView:
         file_choice = input("Nom du fichier à charger → ").strip()
         return file_choice if file_choice else None
 
-    def _handle_file_choice(self, file_choice: str, files: list[str]) -> None:
+    @staticmethod
+    def _handle_file_choice(file_choice: str, files: list[str]) -> None:
         """
         Traite le fichier choisi par l'utilisateur : charge le tournoi ou propose d'en créer un.
 

@@ -1,11 +1,311 @@
 {
     "tournament_name": "PRESENTATION",
-    "location": null,
-    "start_date": null,
-    "end_date": null,
-    "actual_round": 0,
+    "location": "PARIS",
+    "start_date": "10/10/2026",
+    "end_date": "10/10/2026",
+    "actual_round": 4,
     "number_of_rounds": 4,
-    "description": null,
-    "list_of_players": [],
-    "list_of_rounds": []
+    "description": "Tournoi d'échec",
+    "list_of_players": [
+        {
+            "id_national_chess": "AA11111",
+            "tournament_score": 2.5,
+            "rank": 2,
+            "played_with": [
+                "BB11111",
+                "CC11111",
+                "DD11111",
+                "CC11111"
+            ]
+        },
+        {
+            "id_national_chess": "BB11111",
+            "tournament_score": 1.5,
+            "rank": 3,
+            "played_with": [
+                "AA11111",
+                "DD11111",
+                "CC11111",
+                "DD11111"
+            ]
+        },
+        {
+            "id_national_chess": "CC11111",
+            "tournament_score": 3.0,
+            "rank": 1,
+            "played_with": [
+                "DD11111",
+                "AA11111",
+                "BB11111",
+                "AA11111"
+            ]
+        },
+        {
+            "id_national_chess": "DD11111",
+            "tournament_score": 1.0,
+            "rank": 4,
+            "played_with": [
+                "CC11111",
+                "BB11111",
+                "AA11111",
+                "BB11111"
+            ]
+        }
+    ],
+    "list_of_rounds": [
+        {
+            "round_number": "Round 1",
+            "start_time": "18/06/2025 11:17:30",
+            "end_time": "18/06/2025 11:23:08",
+            "matches": [
+                {
+                    "name": "Round 1 - Match",
+                    "player_1": {
+                        "id_national_chess": "CC11111",
+                        "match_score": 1.0,
+                        "tournament_score": 1.0,
+                        "rank": 1,
+                        "color": "Noir",
+                        "played_with": [
+                            "DD11111"
+                        ]
+                    },
+                    "player_2": {
+                        "id_national_chess": "DD11111",
+                        "match_score": 0.0,
+                        "tournament_score": 0.0,
+                        "rank": 3,
+                        "color": "Blanc",
+                        "played_with": [
+                            "CC11111"
+                        ]
+                    },
+                    "winner": {
+                        "id_national_chess": "CC11111"
+                    }
+                },
+                {
+                    "name": "Round 1 - Match",
+                    "player_1": {
+                        "id_national_chess": "BB11111",
+                        "match_score": 0.5,
+                        "tournament_score": 0.5,
+                        "rank": 2,
+                        "color": "Blanc",
+                        "played_with": [
+                            "AA11111"
+                        ]
+                    },
+                    "player_2": {
+                        "id_national_chess": "AA11111",
+                        "match_score": 0.5,
+                        "tournament_score": 0.5,
+                        "rank": 2,
+                        "color": "Noir",
+                        "played_with": [
+                            "BB11111"
+                        ]
+                    },
+                    "winner": "draw"
+                }
+            ]
+        },
+        {
+            "round_number": "Round 2",
+            "start_time": "18/06/2025 11:23:23",
+            "end_time": "18/06/2025 11:23:51",
+            "matches": [
+                {
+                    "name": "Round 2 - Match",
+                    "player_1": {
+                        "id_national_chess": "CC11111",
+                        "match_score": 0.0,
+                        "tournament_score": 1.0,
+                        "rank": 2,
+                        "color": "Noir",
+                        "played_with": [
+                            "DD11111",
+                            "AA11111"
+                        ]
+                    },
+                    "player_2": {
+                        "id_national_chess": "AA11111",
+                        "match_score": 1.0,
+                        "tournament_score": 1.5,
+                        "rank": 1,
+                        "color": "Blanc",
+                        "played_with": [
+                            "BB11111",
+                            "CC11111"
+                        ]
+                    },
+                    "winner": {
+                        "id_national_chess": "AA11111"
+                    }
+                },
+                {
+                    "name": "Round 2 - Match",
+                    "player_1": {
+                        "id_national_chess": "BB11111",
+                        "match_score": 0.5,
+                        "tournament_score": 1.0,
+                        "rank": 2,
+                        "color": "Blanc",
+                        "played_with": [
+                            "AA11111",
+                            "DD11111"
+                        ]
+                    },
+                    "player_2": {
+                        "id_national_chess": "DD11111",
+                        "match_score": 0.5,
+                        "tournament_score": 0.5,
+                        "rank": 3,
+                        "color": "Noir",
+                        "played_with": [
+                            "CC11111",
+                            "BB11111"
+                        ]
+                    },
+                    "winner": "draw"
+                }
+            ]
+        },
+        {
+            "round_number": "Round 3",
+            "start_time": "18/06/2025 11:23:53",
+            "end_time": "18/06/2025 11:23:56",
+            "matches": [
+                {
+                    "name": "Round 3 - Match",
+                    "player_1": {
+                        "id_national_chess": "AA11111",
+                        "match_score": 1.0,
+                        "tournament_score": 2.5,
+                        "rank": 1,
+                        "color": "Blanc",
+                        "played_with": [
+                            "BB11111",
+                            "CC11111",
+                            "DD11111"
+                        ]
+                    },
+                    "player_2": {
+                        "id_national_chess": "DD11111",
+                        "match_score": 0.0,
+                        "tournament_score": 0.5,
+                        "rank": 4,
+                        "color": "Noir",
+                        "played_with": [
+                            "CC11111",
+                            "BB11111",
+                            "AA11111"
+                        ]
+                    },
+                    "winner": {
+                        "id_national_chess": "AA11111"
+                    }
+                },
+                {
+                    "name": "Round 3 - Match",
+                    "player_1": {
+                        "id_national_chess": "BB11111",
+                        "match_score": 0.0,
+                        "tournament_score": 1.0,
+                        "rank": 3,
+                        "color": "Blanc",
+                        "played_with": [
+                            "AA11111",
+                            "DD11111",
+                            "CC11111"
+                        ]
+                    },
+                    "player_2": {
+                        "id_national_chess": "CC11111",
+                        "match_score": 1.0,
+                        "tournament_score": 2.0,
+                        "rank": 2,
+                        "color": "Noir",
+                        "played_with": [
+                            "DD11111",
+                            "AA11111",
+                            "BB11111"
+                        ]
+                    },
+                    "winner": {
+                        "id_national_chess": "CC11111"
+                    }
+                }
+            ]
+        },
+        {
+            "round_number": "Round 4",
+            "start_time": "18/06/2025 11:23:56",
+            "end_time": "18/06/2025 11:23:59",
+            "matches": [
+                {
+                    "name": "Round 4 - Rematch",
+                    "player_1": {
+                        "id_national_chess": "AA11111",
+                        "match_score": 0.0,
+                        "tournament_score": 2.5,
+                        "rank": 2,
+                        "color": "Noir",
+                        "played_with": [
+                            "BB11111",
+                            "CC11111",
+                            "DD11111",
+                            "CC11111"
+                        ]
+                    },
+                    "player_2": {
+                        "id_national_chess": "CC11111",
+                        "match_score": 1.0,
+                        "tournament_score": 3.0,
+                        "rank": 1,
+                        "color": "Blanc",
+                        "played_with": [
+                            "DD11111",
+                            "AA11111",
+                            "BB11111",
+                            "AA11111"
+                        ]
+                    },
+                    "winner": {
+                        "id_national_chess": "CC11111"
+                    }
+                },
+                {
+                    "name": "Round 4 - Rematch",
+                    "player_1": {
+                        "id_national_chess": "BB11111",
+                        "match_score": 0.5,
+                        "tournament_score": 1.5,
+                        "rank": 3,
+                        "color": "Noir",
+                        "played_with": [
+                            "AA11111",
+                            "DD11111",
+                            "CC11111",
+                            "DD11111"
+                        ]
+                    },
+                    "player_2": {
+                        "id_national_chess": "DD11111",
+                        "match_score": 0.5,
+                        "tournament_score": 1.0,
+                        "rank": 4,
+                        "color": "Blanc",
+                        "played_with": [
+                            "CC11111",
+                            "BB11111",
+                            "AA11111",
+                            "BB11111"
+                        ]
+                    },
+                    "winner": "draw"
+                }
+            ]
+        }
+    ]
 }

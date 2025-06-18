@@ -1,4 +1,11 @@
-from config import TOURNAMENTS_FOLDER, ENTER_FOR_MAIN_MENU, ENTER_FOR_CONTINUE, MIN_PLAYERS
+from typing import List
+
+from config import (
+    TOURNAMENTS_FOLDER,
+    ENTER_FOR_MAIN_MENU,
+    ENTER_FOR_CONTINUE,
+    MIN_PLAYERS
+)
 from controllers.match_controller import MatchController
 from storage.tournament_data import save_tournament_to_json
 from models.match_model import Match
@@ -11,102 +18,174 @@ from views.tournament_view import TournamentView
 
 
 class RoundController:
-    """
-    Contrôleur pour gérer l'enchaînement des rounds d'un tournoi,
-    et sauvegarder l'état du tournoi après chaque match.
-    """
-
-    def __init__(self,
-                 tournament: Tournament,
-                 filename: str):
-        self.tournament: Tournament = tournament
-        self.filename: str = filename
-        self.num_rounds: int = tournament.number_of_rounds
-        self.players: list[Player] = tournament.list_of_players
-        self.rounds: list[Round] = tournament.list_of_rounds or []
-
-    def run(self) -> None:
+    @staticmethod
+    def run(
+        tournament: Tournament,
+        filename: str
+    ) -> None:
         """
-        Démarre la séquence de rounds depuis le premier.
+        Démarre la séquence de tous les rounds d'un tournoi.
+
+        Vérifie d'abord qu'il y a suffisamment de joueurs, affiche une erreur le cas échéant,
+        puis délègue à start_from_round pour enchaîner les rounds depuis le premier.
+
+        Args:
+            tournament: L'objet Tournament en cours.
+            filename: Nom du fichier JSON pour la persistance.
         """
-        if len(self.players) < 2:
+        players: List[Player] = tournament.list_of_players
+        if len(players) < MIN_PLAYERS:
             clear_screen()
-            RoundView.show_error(f"Pas assez de joueurs pour démarrer le tournoi (minimum : {MIN_PLAYERS} joueur(s)).")
+            RoundView.show_error(
+                f"Pas assez de joueurs pour démarrer le tournoi (minimum : {MIN_PLAYERS} joueur(s))."
+            )
             print()
             wait_for_enter(ENTER_FOR_MAIN_MENU)
             return
-        self.start_from_round(1)
 
-    def start_from_round(self, starting_round: int) -> None:
+        rounds: List[Round] = tournament.list_of_rounds or []
+        num_rounds: int = tournament.number_of_rounds
+        RoundController.start_from_round(
+            starting_round=1,
+            tournament=tournament,
+            filename=filename,
+            players=players,
+            rounds=rounds,
+            num_rounds=num_rounds
+        )
+
+    @staticmethod
+    def start_from_round(
+        starting_round: int,
+        tournament: Tournament,
+        filename: str,
+        players: List[Player],
+        rounds: List[Round],
+        num_rounds: int
+    ) -> None:
         """
-        Exécute tous les rounds du tournoi à partir du numéro indiqué.
+        Exécute chaque round à partir d'un numéro donné.
+
+        Parcourt les rounds existants ou les crée, exécute chaque match non encore joué,
+        affiche le rapport intermédiaire et attend la validation de l'utilisateur.
+
+        Args:
+            starting_round: Numéro du round de début.
+            tournament: L'objet Tournament en cours.
+            filename: Nom du fichier JSON pour la sauvegarde.
+            players: Liste des joueurs du tournoi.
+            rounds: Liste des rounds déjà créés.
+            num_rounds: Nombre total de rounds à jouer.
         """
-        for rnd_num in range(starting_round, self.num_rounds + 1):
-            rnd = self._get_or_create_round(rnd_num)
+        for rnd_num in range(starting_round, num_rounds + 1):
+            rnd = RoundController._get_or_create_round(
+                rnd_num, tournament, filename, players, rounds
+            )
 
             for match in rnd.matches:
-                if self._is_match_completed(match):
+                if RoundController._is_match_completed(match):
                     continue
-                self._execute_match(match, rnd, rnd_num)
+                RoundController._execute_match(
+                    match, rnd, rnd_num, tournament, filename, rounds
+                )
 
-            self._finalize_round(rnd)
+            RoundController._finalize_round(rnd, players)
             print()
             wait_for_enter(ENTER_FOR_CONTINUE)
 
-        TournamentView.show_tournament_summary(self.tournament)
+        TournamentView.show_tournament_summary(tournament)
         wait_for_enter(ENTER_FOR_MAIN_MENU)
 
-    def _get_or_create_round(self, rnd_num: int) -> Round:
-        """Récupère un Round existant ou en crée un nouveau."""
-        if rnd_num <= len(self.rounds):
-            return self.rounds[rnd_num - 1]
-        rnd = self.make_round(rnd_num)
-        self.rounds.append(rnd)
-        self.tournament.list_of_rounds = self.rounds
-        self.tournament.actual_round = rnd_num
+    @staticmethod
+    def _get_or_create_round(
+        rnd_num: int,
+        tournament: Tournament,
+        filename: str,
+        players: List[Player],
+        rounds: List[Round]
+    ) -> Round:
+        """
+        Récupère un round existant ou en crée un nouveau.
+
+        Si le round existe déjà dans la liste, le retourne. Sinon, génère
+        un nouveau round, le sauvegarde et l'ajoute à tournament.list_of_rounds.
+
+        Args:
+            rnd_num: Numéro du round.
+            tournament: L'objet Tournament en cours.
+            filename: Nom du fichier JSON pour la persistance.
+            players: Liste des joueurs pour la génération d'appariements.
+            rounds: Liste mutable des rounds.
+
+        Returns:
+            L'objet Round correspondant au numéro.
+        """
+        if rnd_num <= len(rounds):
+            return rounds[rnd_num - 1]
+
+        rnd = RoundController.make_round(rnd_num, players)
+        rounds.append(rnd)
+        tournament.list_of_rounds = rounds
+        tournament.actual_round = rnd_num
         save_tournament_to_json(
-            self.tournament.get_serialized_tournament(),
-            TOURNAMENTS_FOLDER, self.filename
+            tournament.get_serialized_tournament(),
+            TOURNAMENTS_FOLDER,
+            filename
         )
         return rnd
 
-    def make_round(self, index: int) -> Round:
+    @staticmethod
+    def make_round(
+        index: int,
+        players: List[Player]
+    ) -> Round:
         """
-        Crée un Round, démarre l'horodatage et génère les appariements.
-        Initialise les scores et les snapshots des matchs.
+        Crée un nouveau round et initialise les matchs.
+
+        - Initialise l'horodatage.
+        - Génère les appariements selon la liste de joueurs.
+        - Initialise les scores et snapshots des matchs créés.
+
+        Args:
+            index: Numéro du round.
+            players: Liste des joueurs à apparier.
+
+        Returns:
+            Le nouvel objet Round initialisé.
         """
         rnd = Round(f"Round {index}")
         rnd.start_round()
-        rnd.generate_pairings(self.players)
+        rnd.generate_pairings(players)
 
         for match in rnd.matches:
             match.assign_color()
-            self._initialize_match_scores(match)
+            RoundController._initialize_match_scores(match)
             if match.player_2:
-                self._initialize_match_snapshots(match)
-
+                RoundController._initialize_match_snapshots(match)
         return rnd
 
-    def _initialize_match_scores(self, match: Match) -> None:
+    @staticmethod
+    def _initialize_match_scores(match: Match) -> None:
         """
-        Initialise les scores et le gagnant d’un match à None.
+        Initialise les scores et le gagnant d'un match à None.
 
         Args:
-            match: Le match à initialiser.
+            match: Objet Match à initialiser.
         """
         match.match_score_1 = None
         if match.player_2:
             match.match_score_2 = None
-            match.winner = None
-        else:
-            match.winner = None
+        match.winner = None
 
-    def _initialize_match_snapshots(self, match: Match) -> None:
+    @staticmethod
+    def _initialize_match_snapshots(match: Match) -> None:
         """
-        Initialise les snapshots des deux joueurs pour un match complet (pas de repos).
+        Initialise les snapshots pour suivre l'état d'avant et d'après.
+
+        Crée _snap1 et _snap2 contenant : id, scores, rank, couleur et history.
 
         Args:
-            match: Le match dont les snapshots doivent être initialisés.
+            match: Objet Match à préparer.
         """
         p1, p2 = match.player_1, match.player_2
         match._snap1 = {
@@ -126,47 +205,133 @@ class RoundController:
             "played_with": [p1.id_national_chess]
         }
 
-    def _execute_match(self, match: Match, rnd: Round, rnd_num: int) -> None:
+    @staticmethod
+    def _execute_match(
+        match: Match,
+        rnd: Round,
+        rnd_num: int,
+        tournament: Tournament,
+        filename: str,
+        rounds: List[Round]
+    ) -> None:
         """
-        Lance un match et garantit persistance, snapshot et clôture de round si nécessaire.
-        """
-        mc = MatchController(
-            match=match,
-            current_round=rnd,
-            tournament=self.tournament,
-            filename=self.filename)
-        try:
-            mc.run()
-        finally:
-            if self._is_round_finished(rnd):
-                rnd.end_round()
-                self._save_progress(rnd_num)
+        Lance l'orchestration d'un match et sauvegarde après.
 
-    def _is_match_completed(self, match: Match) -> bool:
-        """Retourne True si le match a déjà ses scores renseignés."""
+        Utilise MatchController.run, puis vérifie si le round est terminé
+        pour clôturer et persister l'état du round.
+
+        Args:
+            match: L'objet Match à jouer.
+            rnd: Le Round courant.
+            rnd_num: Numéro du round.
+            tournament: L'objet Tournament en cours.
+            filename: Nom du fichier JSON pour sauvegarde.
+            rounds: Liste des rounds pour persistance.
+        """
+        try:
+            MatchController.run(
+                match, rnd, tournament, filename
+            )
+        finally:
+            if RoundController._is_round_finished(rnd):
+                rnd.end_round()
+                RoundController._save_progress(
+                    rnd_num, tournament, filename, rounds
+                )
+
+    @staticmethod
+    def run_match(
+        match: Match,
+        current_round: Round,
+        tournament: Tournament,
+        filename: str
+    ) -> None:
+        """
+        Wrapper simple pour appeler MatchController.run.
+
+        Args:
+            match: Objet Match à exécuter.
+            current_round: Round courant.
+            tournament: Objet Tournament en cours.
+            filename: Nom du fichier JSON.
+        """
+        MatchController.run(
+            match=match,
+            current_round=current_round,
+            tournament=tournament,
+            filename=filename
+        )
+
+    @staticmethod
+    def _is_match_completed(match: Match) -> bool:
+        """
+        Indique si un match a déjà ses scores assignés.
+
+        Args:
+            match: Objet Match à vérifier.
+
+        Returns:
+            True si match_score_1 (et 2 si présent) est non None.
+        """
         if match.player_2 is None:
             return match.match_score_1 is not None
-        return (match.match_score_1 is not None
-                and match.match_score_2 is not None)
+        return (
+            match.match_score_1 is not None and
+            match.match_score_2 is not None
+        )
 
-    def _finalize_round(self, rnd: Round) -> None:
-        """Affiche le rapport et le classement intermédiaire pour le round achevé."""
+    @staticmethod
+    def _finalize_round(rnd: Round, players: List[Player]) -> None:
+        """
+        Affiche le rapport du round achevé et le classement intermédiaire.
+
+        Args:
+            rnd: Round qui vient de se terminer.
+            players: Liste des joueurs pour le classement.
+        """
         RoundView.show_round_report(rnd)
-        RoundView.show_intermediate_ranking(self.players)
+        RoundView.show_intermediate_ranking(players)
 
-    def _is_round_finished(self, rnd: Round) -> bool:
-        """Teste si tous les matchs du round ont leurs scores renseignés."""
+    @staticmethod
+    def _is_round_finished(rnd: Round) -> bool:
+        """
+        Vérifie si tous les matchs d'un round ont leurs scores renseignés.
+
+        Args:
+            rnd: Round à évaluer.
+
+        Returns:
+            True si chaque match a ses scores complétés.
+        """
         return all(
             (m.match_score_1 is not None
              and (m.player_2 is None or m.match_score_2 is not None))
             for m in rnd.matches
         )
 
-    def _save_progress(self, round_number: int) -> None:
-        """Sauvegarde l'état actuel du tournoi dans le fichier JSON."""
-        self.tournament.actual_round = round_number
-        self.tournament.list_of_rounds = self.rounds
+    @staticmethod
+    def _save_progress(
+        round_number: int,
+        tournament: Tournament,
+        filename: str,
+        rounds: List[Round]
+    ) -> None:
+        """
+        Sauvegarde l'état actuel du tournoi après la fin d'un round.
+
+        Met à jour tournament.actual_round et list_of_rounds,
+        puis écrit le JSON.
+
+        Args:
+            round_number: Numéro du round désormais terminé.
+            tournament: Objet Tournament mis à jour.
+            filename: Nom du fichier JSON pour la persistance.
+            rounds: Liste des rounds à sauvegarder.
+        """
+        tournament.actual_round = round_number
+        tournament.list_of_rounds = rounds
         save_tournament_to_json(
-            self.tournament.get_serialized_tournament(),
-            TOURNAMENTS_FOLDER, self.filename
+            tournament.get_serialized_tournament(),
+            TOURNAMENTS_FOLDER,
+            filename
         )

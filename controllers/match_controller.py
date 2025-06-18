@@ -12,77 +12,89 @@ from views.round_view import RoundView
 
 
 class MatchController:
-    tournament: Optional[Tournament]
-
-    def __init__(
-        self,
+    @staticmethod
+    def run(
         match: Match,
         current_round: Round,
         tournament: Optional[Tournament] = None,
         filename: str = None
     ) -> None:
         """
-        - match        : l'objet Match à exécuter
-        - current_round: l'objet Round contenant ce match (pour rafraîchir les snapshots)
-        - tournament   : l'objet Tournament (nécessaire pour update_ranks)
-        - filename     : nom du fichier JSON du tournoi (pour save_tournament_to_json)
-        """
-        self.match = match
-        self.current_round = current_round
-        self.tournament = tournament
-        self.filename = filename
+        Orchestrates a single match within a round:
+        1) Updates live rankings and displays round banner
+        2) Applies result (auto-assigns a draw for byes or prompts user)
+        3) Finalizes match: shows result, updates snapshots/rankings, persists state,
+           and waits for user confirmation.
 
-    def run(self) -> None:
+        Args:
+            match:      The Match instance to play.
+            current_round: The Round containing the match.
+            tournament: Optional Tournament for ranking and persistence.
+            filename:   Optional JSON filename for saving tournament.
         """
-        Orchestration d'un match :
-        1) Classement live & bandeau
-        2) Application du score (bye = DRAW_POINT ou choix utilisateur)
-        3) Finalisation (affichage, rangs, snapshots, sauvegardes, attente)
-        """
-        # 1) Avant le match : mise à jour des rangs et bandeau
-        self._before_match()
+        # 1) Pre-match setup
+        MatchController._before_match(current_round, tournament)
 
-        name_lower = self.match.name.lower()
+        name_lower = match.name.lower()
         is_bye = "repos" in name_lower
 
-        # 2) Détermination et application du résultat
+        # 2) Determine and apply result
         if is_bye:
-            if not self.match.player_1:
+            if not match.player_1:
                 RoundView.show_error("Impossible d'identifier le joueur de repos pour ce match.")
                 return
-            if self.match.match_score_1 is None:
-                self._apply_and_rank(DRAW_POINT)
+            if match.match_score_1 is None:
+                MatchController._apply_and_rank(match, DRAW_POINT, tournament)
             else:
-                self._rank_and_snapshot()
+                MatchController._rank_and_snapshot(match, tournament)
         else:
-            choice = MatchView.ask_match_result(self.match)
-            self._apply_and_rank(choice)
+            choice = MatchView.ask_match_result(match)
+            MatchController._apply_and_rank(match, choice, tournament)
 
-        # 3) Finalisation
-        self._finalize_match()
+        # Intermediate snapshot
+        match.snapshot()
 
-    def _before_match(self) -> None:
-        """
-        Met à jour le classement, rafraîchit les snapshots
-        et affiche le bandeau du round avant d'exécuter CE match.
-        """
-        if self.tournament:
-            update_ranks(self.tournament)
-        self._refresh_match_snapshots()
-        RoundView.show_start_round(self.current_round)
+        # 3) Post-match finalization
+        MatchController._finalize_match(match, current_round, tournament, filename)
 
-    def _refresh_match_snapshots(self) -> None:
+    @staticmethod
+    def _before_match(
+        current_round: Round,
+        tournament: Optional[Tournament] = None
+    ) -> None:
         """
-        Met à jour les champs 'rank' des snapshots des
-        matchs déjà joués dans self.current_round.
+        Updates player rankings, refreshes existing snapshots, and displays
+        the start-of-round banner before playing the provided match.
+
+        Args:
+            current_round: The Round before which to display the banner.
+            tournament:    Optional Tournament for live ranking updates.
         """
-        if not self.tournament:
+        if tournament:
+            update_ranks(tournament)
+        MatchController._refresh_match_snapshots(current_round, tournament)
+        RoundView.show_start_round(current_round)
+
+    @staticmethod
+    def _refresh_match_snapshots(
+        current_round: Round,
+        tournament: Optional[Tournament] = None
+    ) -> None:
+        """
+        Updates the 'rank' fields of any existing snapshots for matches
+        already played in the current round.
+
+        Args:
+            current_round: The Round whose matches to refresh.
+            tournament:    Optional Tournament providing updated ranks.
+        """
+        if not tournament:
             return
-        for m in self.current_round.matches:
+        for m in current_round.matches:
             if hasattr(m, "_snap1") and m._snap1:
                 pid1 = m._snap1["id_national_chess"]
                 new_rank1 = next(
-                    (p.rank for p in self.tournament.list_of_players
+                    (p.rank for p in tournament.list_of_players
                      if p.id_national_chess == pid1),
                     None
                 )
@@ -91,66 +103,99 @@ class MatchController:
             if hasattr(m, "_snap2") and m._snap2:
                 pid2 = m._snap2["id_national_chess"]
                 new_rank2 = next(
-                    (p.rank for p in self.tournament.list_of_players
+                    (p.rank for p in tournament.list_of_players
                      if p.id_national_chess == pid2),
                     None
                 )
                 if new_rank2 is not None:
                     m._snap2["rank"] = new_rank2
 
-    def _apply_and_rank(self, score: float) -> None:
+    @staticmethod
+    def _apply_and_rank(
+        match: Match,
+        score: float,
+        tournament: Optional[Tournament] = None
+    ) -> None:
         """
-        Applique le résultat sur le match, met à jour les rangs
-        et prend un snapshot.
-        """
-        self.match.apply_result(score)
-        self._rank_and_snapshot()
+        Applies the given score to the match, updates rankings,
+        and takes a fresh snapshot.
 
-    def _rank_and_snapshot(self) -> None:
+        Args:
+            match:      The Match to update.
+            score:      Score to assign to player 1 (mirror applies).
+            tournament: Optional Tournament for live rank updates.
         """
-        Met à jour les rangs de tous les joueurs puis prend le snapshot du match.
-        """
-        if self.tournament:
-            update_ranks(self.tournament)
-        self.match.snapshot()
+        match.apply_result(score)
+        MatchController._rank_and_snapshot(match, tournament)
 
-    def _show_and_save_results(self) -> None:
+    @staticmethod
+    def _rank_and_snapshot(
+        match: Match,
+        tournament: Optional[Tournament] = None
+    ) -> None:
         """
-        Affiche le résultat du match et sauvegarde l'état actuel du tournoi.
+        Updates player rankings (if a tournament is provided) and captures
+        a snapshot of the match state.
+
+        Args:
+            match:      The Match to snapshot.
+            tournament: Optional Tournament for ranking update.
         """
-        MatchView.show_match_results(self.match)
-        if self.tournament and self.filename:
+        if tournament:
+            update_ranks(tournament)
+        match.snapshot()
+
+    @staticmethod
+    def _show_and_save_results(
+        match: Match,
+        tournament: Optional[Tournament] = None,
+        filename: str = None
+    ) -> None:
+        """
+        Displays the final result of the match and saves the tournament state.
+
+        Args:
+            match:      The Match whose results to display.
+            tournament: Optional Tournament to persist.
+            filename:   JSON filename for saving.
+        """
+        MatchView.show_match_results(match)
+        if tournament and filename:
             save_tournament_to_json(
-                self.tournament.get_serialized_tournament(),
+                tournament.get_serialized_tournament(),
                 TOURNAMENTS_FOLDER,
-                self.filename
+                filename
             )
 
-    def _finalize_match(self) -> None:
+    @staticmethod
+    def _finalize_match(
+        match: Match,
+        current_round: Round,
+        tournament: Optional[Tournament] = None,
+        filename: str = None
+    ) -> None:
         """
-        Après un match (ou un bye) :
-         1) Affiche et sauve le tournoi
-         2) Recalcule les rangs live
-         3) Rafraîchit tous les snapshots de la ronde
-         4) Sauve à nouveau pour inclure les rangs à jour
-         5) Attend que l'utilisateur appuie sur Entrée
+        After a match completes (or a bye):
+         1) Show results and save tournament once
+         2) Recompute live rankings
+         3) Refresh all snapshots for the current round
+         4) Save tournament again to include updated ranks
+         5) Wait for user to press Enter
+
+        Args:
+            match:        The Match just played.
+            current_round: The Round containing the match.
+            tournament:   Optional Tournament for rank updates and persistence.
+            filename:     JSON filename for saving.
         """
-        # Affichage + première sauvegarde
-        self._show_and_save_results()
-
-        if self.tournament:
-            # Recalcul des rangs pour tous les joueurs
-            update_ranks(self.tournament)
-
-            # Rafraîchissement des snapshots sur toute la ronde
-            self._refresh_match_snapshots()
-
-            # Sauvegarde finale pour inclure les nouveaux rangs
-            if self.filename:
+        MatchController._show_and_save_results(match, tournament, filename)
+        if tournament:
+            update_ranks(tournament)
+            MatchController._refresh_match_snapshots(current_round, tournament)
+            if filename:
                 save_tournament_to_json(
-                    self.tournament.get_serialized_tournament(),
+                    tournament.get_serialized_tournament(),
                     TOURNAMENTS_FOLDER,
-                    self.filename
+                    filename
                 )
-
         wait_for_enter(ENTER_FOR_CONTINUE)

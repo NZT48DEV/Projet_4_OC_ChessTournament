@@ -3,6 +3,8 @@ TODO.md
 *.pptx
 *.pdf
 *.docx
+*.txt
+*.zip
 
 # Ignore les fichiers Python compilés
 __pycache__/
